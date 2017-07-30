@@ -17,29 +17,31 @@ if ((Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\WindowsPowerShell\dbatools
 if ( -not ($(Get-Command -name "Unblock-Fil*") -eq $null)){
 	Get-ChildItem -Path "$script:PSModuleRoot\*.dll" -Recurse | Unblock-File -ErrorAction SilentlyContinue
 }
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Smo.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Dmf.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.SqlWmiManagement.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.ConnectionInfo.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.ConnectionInfoExtended.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.SmoExtended.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.RegisteredServers.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.Sdk.Sfc.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.SqlEnum.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.RegSvrEnum.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.WmiEnum.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.ServiceBrokerEnum.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.Collector.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.CollectorEnum.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.Utility.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.UtilityEnum.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.HadrDMF.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.XEvent.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.XEventEnum.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.XEventDbScoped.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.XEventDbScopedEnum.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.XEventEnum.dll"
-Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.Collector.dll"
+
+
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Smo.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Dmf.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.SqlWmiManagement.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.ConnectionInfo.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.ConnectionInfoExtended.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.SmoExtended.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.RegisteredServers.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.Sdk.Sfc.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.SqlEnum.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.RegSvrEnum.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.WmiEnum.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.ServiceBrokerEnum.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.Collector.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.CollectorEnum.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.Utility.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.UtilityEnum.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.HadrDMF.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.XEvent.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.XEventEnum.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.XEventDbScoped.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.XEventDbScopedEnum.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.XEventEnum.dll")
+Add-Type -Path [IO.Path]::Combine("$script:PSModuleRoot","bin","smo","Microsoft.SqlServer.Management.Collector.dll")
 
 <#
 
@@ -57,8 +59,8 @@ if ($script:doDotSource) {
 	. "$script:PSModuleRoot\bin\typealiases.ps1"
 }
 else {
-	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText("$script:PSModuleRoot\bin\library.ps1"))), $null, $null)
-	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText("$script:PSModuleRoot\bin\typealiases.ps1"))), $null, $null)
+	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText( [IO.Path]::Combine("$script:PSModuleRoot","bin","library.ps1")))), $null, $null)
+	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText( [IO.Path]::Combine("$script:PSModuleRoot","bin","typealiases.ps1")))), $null, $null)
 }
 
 # All internal functions privately available within the toolset - 221ms
