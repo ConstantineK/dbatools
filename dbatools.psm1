@@ -13,7 +13,12 @@ if ($dbatools_dotsourcemodule) { $script:doDotSource = $true }
 if ((Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\WindowsPowerShell\dbatools\System" -Name "DoDotSource" -ErrorAction Ignore).DoDotSource) { $script:doDotSource = $true }
 if ((Get-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\WindowsPowerShell\dbatools\System" -Name "DoDotSource" -ErrorAction Ignore).DoDotSource) { $script:doDotSource = $true }
 
-Get-ChildItem -Path "$script:PSModuleRoot\*.dll" -Recurse | Unblock-File -ErrorAction SilentlyContinue
+# No unblock file on linux, it doesn't manage metadata this way
+if ($(Get-Command -name "Unblock-Fil*") -eq $null){
+	continue
+} else {
+	Get-ChildItem -Path "$script:PSModuleRoot\*.dll" -Recurse | Unblock-File -ErrorAction SilentlyContinue
+}
 Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Smo.dll"
 Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Dmf.dll"
 Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.SqlWmiManagement.dll"
@@ -38,9 +43,9 @@ Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.XEve
 Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.XEventEnum.dll"
 Add-Type -Path "$script:PSModuleRoot\bin\smo\Microsoft.SqlServer.Management.Collector.dll"
 
-<# 
+<#
 
-	Do the rest of the loading 
+	Do the rest of the loading
 
 #>
 
