@@ -59,8 +59,8 @@ if ($script:doDotSource) {
 	. "$script:PSModuleRoot\bin\typealiases.ps1"
 }
 else {
-	$libraryPath = [IO.Path]::Combine("$script:PSModuleRoot","bin","library.ps1")
-	$typesPath = [IO.Path]::Combine("$script:PSModuleRoot","bin","typealiases.ps1")
+	$libraryPath = [IO.Path]::Combine($script:PSModuleRoot,"bin","library.ps1")
+	$typesPath = [IO.Path]::Combine($script:PSModuleRoot,"bin","typealiases.ps1")
 	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText( $libraryPath ))), $null, $null)
 	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText( $typesPath ))), $null, $null)
 }
