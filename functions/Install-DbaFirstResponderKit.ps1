@@ -101,9 +101,7 @@ Logs into sql2016\standardrtm, sql2016\sqlexpress and sql2014 with Windows authe
 			}
 
 			# Unblock if there's a block
-			if ($(Get-Command -name "Unblock-Fil*") -eq $null){
-				continue
-			} else {
+			if ( -not ($(Get-Command -name "Unblock-Fil*") -eq $null)){
 				Unblock-File $zipfile -ErrorAction SilentlyContinue
 			}
 

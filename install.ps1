@@ -84,9 +84,7 @@ catch {
 
 
 # Unblock if there's a block
-if ($(Get-Command -name "Unblock-Fil*") -eq $null){
-	continue
-} else {
+if ( -not ($(Get-Command -name "Unblock-Fil*") -eq $null)){
 	Unblock-File $zipfile -ErrorAction SilentlyContinue
 }
 
