@@ -59,8 +59,10 @@ if ($script:doDotSource) {
 	. "$script:PSModuleRoot\bin\typealiases.ps1"
 }
 else {
-	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText( [IO.Path]::Combine("$script:PSModuleRoot","bin","library.ps1")))), $null, $null)
-	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText( [IO.Path]::Combine("$script:PSModuleRoot","bin","typealiases.ps1")))), $null, $null)
+	$libraryPath = [IO.Path]::Combine("$script:PSModuleRoot","bin","library.ps1")
+	$typesPath = [IO.Path]::Combine("$script:PSModuleRoot","bin","typealiases.ps1")
+	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText( $libraryPath ))), $null, $null)
+	$ExecutionContext.InvokeCommand.InvokeScript($false, ([scriptblock]::Create([io.file]::ReadAllText( $typesPath ))), $null, $null)
 }
 
 # All internal functions privately available within the toolset - 221ms
