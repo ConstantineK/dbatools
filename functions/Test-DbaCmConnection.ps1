@@ -41,9 +41,9 @@ function Test-DbaCmConnection {
         Author: Fred Winmann (@FredWeinmann)
         Tags: ComputerManagement
 
-        Website: https://dbatools.io
-        Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-        License: MIT https://opensource.org/licenses/MIT
+        
+        
+        License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         **This function should not be called from within dbatools. It is meant as a tool for users only.**
 

@@ -44,9 +44,9 @@ function Remove-DbaDbUser {
     Tags: Databases, User
     Author: Doug Meyers (@dgmyrs)
 
-    Website: https://dbatools.io
-    Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-    License: MIT https://opensource.org/licenses/MIT
+    
+    
+    License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .LINK
     https://dbatools.io/Remove-DbaDbUser

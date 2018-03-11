@@ -43,7 +43,7 @@ function Start-DbaSqlService {
     Tags:
     dbatools PowerShell module (https://dbatools.io)
     Copyright (C) 2017 Chrissy LeMaire
-    License: MIT https://opensource.org/licenses/MIT
+    License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .LINK
     https://dbatools.io/Start-DbaSqlService

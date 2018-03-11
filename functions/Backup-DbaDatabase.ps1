@@ -97,9 +97,9 @@ function Backup-DbaDatabase {
                 Tags: DisasterRecovery, Backup, Restore
                 Author: Stuart Moore (@napalmgram), stuart-moore.com
 
-                Website: https://dbatools.io
-                Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-                License: MIT https://opensource.org/licenses/MIT
+                
+                
+                License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
             .EXAMPLE
                 Backup-DbaDatabase -SqlInstance Server1 -Database HR, Finance

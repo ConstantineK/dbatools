@@ -24,9 +24,9 @@ Specifies the path to the output
 Author: André Kamman (@AndreKamman), http://clouddba.io
 Tags: Diagnostic, DMV, Troubleshooting
 
-Website: https://dbatools.io
-Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-License: MIT https://opensource.org/licenses/MIT
+
+
+License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
 .EXAMPLE
 Save-DbaDiagnosticQueryScript -Path c:\temp

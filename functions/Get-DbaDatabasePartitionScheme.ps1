@@ -27,9 +27,9 @@ The database(s) to exclude - this list is auto populated from the server
 Tags: Databases
 Author: Klaas Vandenberghe ( @PowerDbaKlaas )
 
-Website: https://dbatools.io
-Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-License: MIT https://opensource.org/licenses/MIT
+
+
+License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
 .EXAMPLE
 Get-DbaDatabasePartitionScheme -SqlInstance sql2016

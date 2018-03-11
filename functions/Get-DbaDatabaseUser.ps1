@@ -30,9 +30,9 @@ This switch removes all system objects from the user collection
 Tags: security, Databases
 Author: Klaas Vandenberghe ( @PowerDbaKlaas )
 
-Website: https://dbatools.io
-Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-License: MIT https://opensource.org/licenses/MIT
+
+
+License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
 .EXAMPLE
 Get-DbaDatabaseUser -SqlInstance sql2016

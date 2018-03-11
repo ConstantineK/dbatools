@@ -43,7 +43,7 @@ function Set-DbaMaxMemory {
             Tags: MaxMemory, Memory
             dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
             Copyright (C) 2016 Chrissy LeMaire
-            License: MIT https://opensource.org/licenses/MIT
+            License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
             https://dbatools.io/Set-DbaMaxMemory

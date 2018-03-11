@@ -33,9 +33,9 @@ Switch to indicate that you wish to bypass the recommended limits of the functio
 Tags: Databases, Logs
 Author: Stuart Moore (@napalmgram), stuart-moore.com
 
-Website: https://dbatools.io
-Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-License: MIT https://opensource.org/licenses/MIT
+
+
+License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
 .EXAMPLE
 $Log = Read-DbaTransactionLog -SqlInstance sql2016 -Database MyDatabase

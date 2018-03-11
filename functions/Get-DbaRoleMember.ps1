@@ -37,9 +37,9 @@ Credential object used to connect to the SQL Server as a different user.
 Tags: Roles, Databases
 Author: Klaas Vandenberghe ( @PowerDBAKlaas )
 
-Website: https://dbatools.io
-Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-License: MIT https://opensource.org/licenses/MIT
+
+
+License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
 .LINK
  https://dbatools.io/Get-DbaRoleMember

@@ -124,9 +124,9 @@ function Read-DbaTraceFile {
 
         .NOTES
         Tags: Security, Trace
-        Website: https://dbatools.io
-        Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-        License: MIT https://opensource.org/licenses/MIT
+        
+        
+        License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .EXAMPLE
         Read-DbaTraceFile -SqlInstance sql2016 -Database master, tempdb -Path C:\traces\big.trc

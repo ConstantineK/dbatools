@@ -127,9 +127,9 @@ function Import-DbaCsvToSql {
         .NOTES
             Tags: Migration
             Author: Chrissy LeMaire (@cl), netnerds.net
-            Website: https://dbatools.io
-            Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-            License: MIT https://opensource.org/licenses/MIT
+            
+            
+            License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
             https://blog.netnerds.net/2015/09/Import-DbaCsvtosql-super-fast-csv-to-sql-server-import-powershell-module/

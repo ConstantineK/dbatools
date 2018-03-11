@@ -66,9 +66,9 @@ function Copy-DbaCredential {
                 - DAC access enabled for local (default)
             Limitations: Hasn't been tested thoroughly. Works on Win8.1 and SQL Server 2012 & 2014 so far.
 
-            Website: https://dbatools.io
-            Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-            License: MIT https://opensource.org/licenses/MIT
+            
+            
+            License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
             https://dbatools.io/Copy-DbaCredential

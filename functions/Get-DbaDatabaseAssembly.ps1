@@ -22,9 +22,9 @@ function Get-DbaDatabaseAssembly {
         .NOTES
             Tags: Assembly, Database
             Author: Garry Bargsley (@gbargsley), http://blog.garrybargsley.com
-            Website: https://dbatools.io
-            Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-            License: MIT https://opensource.org/licenses/MIT
+            
+            
+            License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
             https://dbatools.io/Get-DbaDatabaseAssembly

@@ -29,9 +29,9 @@ function Get-DbaDatabaseFile {
     .NOTES
     Author: Stuart Moore (@napalmgram), stuart-moore.com
     Tags: Database
-    Website: https://dbatools.io
-    Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-    License: MIT https://opensource.org/licenses/MIT
+    
+    
+    License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .EXAMPLE
     Get-DbaDatabaseFile -SqlInstance sql2016

@@ -63,9 +63,9 @@ Shows what would happen if the command would execute, but does not actually perf
 .NOTES
 Tags: Database, DMV
 Author: André Kamman (@AndreKamman), http://clouddba.io
-Website: https://dbatools.io
-Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-License: MIT https://opensource.org/licenses/MIT
+
+
+License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
 .LINK
 https://dbatools.io/Invoke-DbaDiagnosticQuery

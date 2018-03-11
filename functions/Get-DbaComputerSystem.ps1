@@ -26,8 +26,8 @@ function Get-DbaComputerSystem {
             Author: Shawn Melton (@wsmelton | http://blog.wsmelton.info)
 
             Website: https: //dbatools.io
-            Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-            License: MIT https://opensource.org/licenses/MIT
+            
+            License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
             https://dbatools.io/Get-DbaComputerSystem

@@ -26,9 +26,9 @@ function Get-DbaTraceFlag {
 
             References:  https://docs.microsoft.com/en-us/sql/t-sql/database-console-commands/dbcc-traceon-trace-flags-transact-sql
 
-            Website: https://dbatools.io
-            Copyright: (C) Chrissy LeMaire, clemaire@gmail.com
-            License: MIT https://opensource.org/licenses/MIT
+            
+            
+            License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
             https://dbatools.io/Get-DbaTraceFlag
