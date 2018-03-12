@@ -143,9 +143,9 @@ function Copy-TableData {
     [CmdletBinding(DefaultParameterSetName = "Default", SupportsShouldProcess = $true)]
     param (
         [Alias("ServerInstance", "SqlServer", "Source")]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [PSCredential]$SqlCredential,
-        [DbaInstanceParameter]$Destination,
+        $Destination,
         [PSCredential]$DestinationSqlCredential,
         [string]$Database,
         [string]$DestinationDatabase,

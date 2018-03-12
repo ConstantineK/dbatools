@@ -5,10 +5,10 @@
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 
     Context "adds the alias" {
-        $results = New-DbaClientAlias -ServerName sql2016 -Alias dbatoolscialias-new -Verbose:$false
+        $results = New-ClientAlias -ServerName sql2016 -Alias dbatoolscialias-new -Verbose:$false
         It "returns accurate information" {
             $results.AliasName | Should Be dbatoolscialias-new, dbatoolscialias-new
         }
-        $results | Remove-DbaClientAlias
+        $results | Remove-ClientAlias
     }
 }

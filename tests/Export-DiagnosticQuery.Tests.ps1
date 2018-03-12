@@ -8,7 +8,7 @@ Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
     }
     Context "Verifying output" {
         It "exports results to one file and creates directory if required" {
-            $results = Invoke-DbaDiagnosticQuery -SqlInstance $script:instance2 -QueryName 'Memory Clerk Usage' | Export-DbaDiagnosticQuery -Path "$env:temp\dbatoolsci"
+            $results = Invoke-DiagnosticQuery -SqlInstance $script:instance2 -QueryName 'Memory Clerk Usage' | Export-DiagnosticQuery -Path "$env:temp\dbatoolsci"
             (Get-ChildItem "$env:temp\dbatoolsci").Count | Should Be 1
         }
     }

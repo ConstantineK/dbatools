@@ -18,8 +18,8 @@ function Get-PasswordHash {
     .NOTES
     Tags: Login, Internal
     Author: Kirill Kravtsov (@nvarscar)
-    dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-    Copyright (C) 2016 Chrissy LeMaire
+    sqlshellPowerShell module (https://dbatools.io, clemaire@gmail.com)
+
     License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .EXAMPLE

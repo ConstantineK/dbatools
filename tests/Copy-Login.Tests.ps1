@@ -7,8 +7,8 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 
     foreach ($instance in $instances) {
         foreach ($login in $logins) {
-            if ($l = Get-DbaLogin -SqlInstance $instance -Login $login) {
-                Get-DbaProcess -SqlInstance $instance -Login $login | Stop-DbaProcess
+            if ($l = Get-Login -SqlInstance $instance -Login $login) {
+                Get-Process -SqlInstance $instance -Login $login | Stop-Process
                 $l.Drop()
             }
         }
@@ -18,14 +18,14 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 
     Context "Copy login with the same properties." {
         It "Should copy successfully" {
-            $results = Copy-DbaLogin -Source $script:instance1 -Destination $script:instance2 -Login Tester
+            $results = Copy-Login -Source $script:instance1 -Destination $script:instance2 -Login Tester
             $results.Status | Should Be "Successful"
         }
 
         It "Should retain its same properties" {
 
-            $login1 = Get-Dbalogin -SqlInstance $script:instance1 -login Tester
-            $login2 = Get-Dbalogin -SqlInstance $script:instance2 -login Tester
+            $login1 = Get-login -SqlInstance $script:instance1 -login Tester
+            $login2 = Get-login -SqlInstance $script:instance2 -login Tester
 
             $login2 | Should Not BeNullOrEmpty
 
@@ -46,13 +46,13 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         It "Should login with newly created Sql Login (also tests credential login) and gets name" {
             $password = ConvertTo-SecureString -Force -AsPlainText tester1
             $cred = New-Object System.Management.Automation.PSCredential ("tester", $password)
-            $s = Connect-DbaInstance -SqlInstance $script:instance1 -Credential $cred
+            $s = Connect-Instance -SqlInstance $script:instance1 -Credential $cred
             $s.Name | Should Be $script:instance1
         }
     }
 
     Context "No overwrite" {
-        $results = Copy-DbaLogin -Source $script:instance1 -Destination $script:instance2 -Login tester
+        $results = Copy-Login -Source $script:instance1 -Destination $script:instance2 -Login tester
         It "Should say skipped" {
             $results.Status | Should be "Skipped"
             $results.Notes | Should be "Already exists"
@@ -60,7 +60,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     }
 
     Context "ExcludeSystemLogin Parameter" {
-        $results = Copy-DbaLogin -Source $script:instance1 -Destination $script:instance2 -ExcludeSystemLogin
+        $results = Copy-Login -Source $script:instance1 -Destination $script:instance2 -ExcludeSystemLogin
         It "Should say skipped" {
             $results.Status.Contains('Skipped') | Should Be $true
             $results.Notes.Contains('System login') | Should Be $true

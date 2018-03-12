@@ -4,7 +4,7 @@
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "connection is properly made" {
-        $server = Connect-DbaInstance -SqlInstance $script:instance1 -ApplicationIntent ReadOnly
+        $server = Connect-Instance -SqlInstance $script:instance1 -ApplicationIntent ReadOnly
 
         It "returns the proper name" {
             $server.Name -eq $script:instance1 | Should Be $true
@@ -19,7 +19,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         }
 
         It "sets StatementTimeout to 0" {
-            $server = Connect-DbaInstance -SqlInstance $script:instance1 -StatementTimeout 0
+            $server = Connect-Instance -SqlInstance $script:instance1 -StatementTimeout 0
 
             $server.ConnectionContext.StatementTimeout | Should Be 0
         }
@@ -40,7 +40,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
                 'StatementTimeout' = 0
             }
 
-            $server = Connect-DbaInstance -SqlInstance $script:instance1 @params
+            $server = Connect-Instance -SqlInstance $script:instance1 @params
 
             foreach ($param in $params.GetEnumerator()) {
                 if ($param.Key -eq 'Database') {

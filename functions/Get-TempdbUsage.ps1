@@ -1,4 +1,4 @@
-function Get-DbaTempdbUsage {
+function Get-TempdbUsage {
     <#
     .SYNOPSIS
     Gets Tempdb usage for running queries.
@@ -24,14 +24,14 @@ function Get-DbaTempdbUsage {
     Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
     .NOTES
-    dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-    Copyright (C) 2016 Chrissy LeMaire
+    sqlshellPowerShell module (https://dbatools.io, clemaire@gmail.com)
+
     License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .LINK
-    https://dbatools.io/Get-DbaTempdbUsage
+    https://dbatools.io/Get-TempdbUsage
     .EXAMPLE
-    Get-DbaTempdbUsage -SqlInstance localhost\SQLDEV2K14
+    Get-TempdbUsage -SqlInstance localhost\SQLDEV2K14
 
     Gets tempdb usage for localhost\SQLDEV2K14
     #>

@@ -55,11 +55,11 @@ function Copy-SysDbUserObject {
     param (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [DbaInstanceParameter]$Source,
+        $Source,
         [PSCredential]$SourceSqlCredential,
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [DbaInstanceParameter]$Destination,
+        $Destination,
         [PSCredential]$DestinationSqlCredential,
         [switch][Alias('Silent')]$EnableException
     )

@@ -1,4 +1,4 @@
-function Get-DbaNetworkActivity {
+function Get-NetworkActivity {
     <#
       .SYNOPSIS
       Gets the Current traffic on every Network Interface on a computer.
@@ -23,25 +23,25 @@ function Get-DbaNetworkActivity {
       .NOTES
       Author: Klaas Vandenberghe ( @PowerDBAKlaas )
       Tags: Network
-      dbatools PowerShell module (https://dbatools.io)
-      Copyright (C) 2016 Chrissy LeMaire
+      sqlshellPowerShell module (https://dbatools.io)
+
       License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
       .LINK
-      https://dbatools.io/Get-DbaNetworkActivity
+      https://dbatools.io/Get-NetworkActivity
 
       .EXAMPLE
-      Get-DbaNetworkActivity -ComputerName sqlserver2014a
+      Get-NetworkActivity -ComputerName sqlserver2014a
 
       Gets the Current traffic on every Network Interface on computer sqlserver2014a.
 
       .EXAMPLE
-      'sql1','sql2','sql3' | Get-DbaNetworkActivity
+      'sql1','sql2','sql3' | Get-NetworkActivity
 
       Gets the Current traffic on every Network Interface on computers sql1, sql2 and sql3.
 
       .EXAMPLE
-      Get-DbaNetworkActivity -ComputerName sql1,sql2 | Out-Gridview
+      Get-NetworkActivity -ComputerName sql1,sql2 | Out-Gridview
 
       Gets the Current traffic on every Network Interface on computers sql1 and sql2, and shows them in a grid view.
 
@@ -61,7 +61,7 @@ function Get-DbaNetworkActivity {
     }
     PROCESS {
         foreach ($computer in $ComputerName) {
-            $Server = Resolve-DbaNetworkName -ComputerName $Computer -Credential $credential
+            $Server = Resolve-NetworkName -ComputerName $Computer -Credential $credential
             if ( $Server.FullComputerName ) {
                 $Computer = $server.FullComputerName
                 Write-Message -Level Verbose -Message "Creating CIMSession on $computer over WSMan"

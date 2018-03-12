@@ -81,20 +81,20 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 
                 -- display trace id for future references
                 select TraceID=@TraceID"
-        $server = Connect-DbaInstance -SqlInstance $script:instance1
+        $server = Connect-Instance -SqlInstance $script:instance1
         $traceid = ($server.Query($sql)).TraceID
     }
     AfterAll {
         Remove-Item C:\windows\temp\temptrace.trc
     }
     Context "Test Removing Trace" {
-        $results = Get-DbaTrace -SqlInstance $script:instance1 -Id $traceid | Remove-DbaTrace
+        $results = Get-Trace -SqlInstance $script:instance1 -Id $traceid | Remove-Trace
         It "returns the right values" {
             $results.Id | Should Be $traceid
             $results.Status | Should Be "Stopped, closed and deleted"
         }
         It "doesn't return any result for trace file id $traceid" {
-            Get-DbaTrace -SqlInstance $script:instance1 -Id $traceid | Should Be $null
+            Get-Trace -SqlInstance $script:instance1 -Id $traceid | Should Be $null
         }
     }
 }

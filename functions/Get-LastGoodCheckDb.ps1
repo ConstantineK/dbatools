@@ -1,4 +1,4 @@
-function Get-DbaLastGoodCheckDb {
+function Get-LastGoodCheckDb {
     <#
         .SYNOPSIS
             Get date/time for last known good DBCC CHECKDB
@@ -47,8 +47,8 @@ function Get-DbaLastGoodCheckDb {
             Tags: CHECKDB, Database
             Author: Jakob Bindslet (jakob@bindslet.dk)
 
-            
-            
+
+
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
@@ -60,12 +60,12 @@ function Get-DbaLastGoodCheckDb {
                 https://www.mssqltips.com/sqlservertip/1988/ensure-sql-server-data-purity-checks-are-performed/
 
         .EXAMPLE
-            Get-DbaLastGoodCheckDb -SqlInstance ServerA\sql987
+            Get-LastGoodCheckDb -SqlInstance ServerA\sql987
 
             Returns a custom object displaying Server, Database, DatabaseCreated, LastGoodCheckDb, DaysSinceDbCreated, DaysSinceLastGoodCheckDb, Status and DataPurityEnabled
 
         .EXAMPLE
-            Get-DbaLastGoodCheckDb -SqlInstance ServerA\sql987 -SqlCredential (Get-Credential sqladmin) | Format-Table -AutoSize
+            Get-LastGoodCheckDb -SqlInstance ServerA\sql987 -SqlCredential (Get-Credential sqladmin) | Format-Table -AutoSize
 
             Returns a formatted table displaying Server, Database, DatabaseCreated, LastGoodCheckDb, DaysSinceDbCreated, DaysSinceLastGoodCheckDb, Status and DataPurityEnabled. Authenticates using SQL Server authentication.
     #>
@@ -92,7 +92,7 @@ function Get-DbaLastGoodCheckDb {
             }
 
             if ($server.versionMajor -lt 9) {
-                Stop-Function -Message "Get-DbaLastGoodCheckDb is only supported on SQL Server 2005 and above. Skipping Instance." -Continue -Target $instance
+                Stop-Function -Message "Get-LastGoodCheckDb is only supported on SQL Server 2005 and above. Skipping Instance." -Continue -Target $instance
             }
 
             $dbs = $server.Databases

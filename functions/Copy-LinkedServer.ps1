@@ -79,10 +79,10 @@ function Copy-LinkedServer {
     [CmdletBinding(DefaultParameterSetName = "Default", SupportsShouldProcess = $true)]
     Param (
         [parameter(Mandatory = $true)]
-        [DbaInstanceParameter]$Source,
+        $Source,
         [PSCredential]$SourceSqlCredential,
         [parameter(Mandatory = $true)]
-        [DbaInstanceParameter]$Destination,
+        $Destination,
         [PSCredential]$DestinationSqlCredential,
         [object[]]$LinkedServer,
         [object[]]$ExcludeLinkedServer,

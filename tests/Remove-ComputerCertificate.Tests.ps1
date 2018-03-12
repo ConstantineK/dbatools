@@ -5,11 +5,11 @@
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "Can remove a certificate" {
         BeforeAll {
-            $null = Add-DbaComputerCertificate -Path $script:appveyorlabrepo\certificates\localhost.crt -Confirm:$false
+            $null = Add-ComputerCertificate -Path $script:appveyorlabrepo\certificates\localhost.crt -Confirm:$false
             $thumbprint = "29C469578D6C6211076A09CEE5C5797EEA0C2713"
         }
 
-        $results = Remove-DbaComputerCertificate -Thumbprint $thumbprint -Confirm:$false
+        $results = Remove-ComputerCertificate -Thumbprint $thumbprint -Confirm:$false
 
         It "returns the store Name" {
             $results.Store -eq "LocalMachine" | Should Be $true
@@ -23,7 +23,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         }
 
         It "really removed it" {
-            $results = Get-DbaComputerCertificate -Thumbprint $thumbprint
+            $results = Get-ComputerCertificate -Thumbprint $thumbprint
             $results | Should Be $null
         }
     }

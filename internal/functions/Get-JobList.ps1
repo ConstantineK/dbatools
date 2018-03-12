@@ -50,14 +50,14 @@ function Get-JobList {
     .NOTES
         Author: Shawn Melton (@wsmelton)
 
-        
-        
+
+
         License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
     #>
     [cmdletbinding()]
     param(
         [Parameter(ValueFromPipeline = $true)]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [PSCredential]$SqlCredential,
         [string[]]$JobFilter,
         [string[]]$StepFilter,

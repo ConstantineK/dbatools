@@ -1,4 +1,4 @@
-function Stop-DbaSqlService {
+function Stop-SqlService {
     <#
     .SYNOPSIS
     Stops SQL Server services on a computer.
@@ -25,7 +25,7 @@ function Stop-DbaSqlService {
     How long to wait for the start/stop request completion before moving on. Specify 0 to wait indefinitely.
 
     .PARAMETER ServiceCollection
-    A collection of services from Get-DbaSqlService
+    A collection of services from Get-SqlService
 
     .PARAMETER Force
     Use this switch to stop dependent services before proceeding with the specified service
@@ -47,35 +47,35 @@ function Stop-DbaSqlService {
     .NOTES
     Author: Kirill Kravtsov( @nvarscar )
     Tags:
-    dbatools PowerShell module (https://dbatools.io)
+    sqlshellPowerShell module (https://dbatools.io)
     Copyright (C) 2017 Chrissy LeMaire
     License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .LINK
-    https://dbatools.io/Stop-DbaSqlService
+    https://dbatools.io/Stop-SqlService
 
     .EXAMPLE
-    Stop-DbaSqlService -ComputerName sqlserver2014a
+    Stop-SqlService -ComputerName sqlserver2014a
 
     Stops the SQL Server related services on computer sqlserver2014a.
 
     .EXAMPLE
-    'sql1','sql2','sql3'| Get-DbaSqlService | Stop-DbaSqlService
+    'sql1','sql2','sql3'| Get-SqlService | Stop-SqlService
 
     Gets the SQL Server related services on computers sql1, sql2 and sql3 and stops them.
 
     .EXAMPLE
-    Stop-DbaSqlService -ComputerName sql1,sql2 -Instance MSSQLSERVER
+    Stop-SqlService -ComputerName sql1,sql2 -Instance MSSQLSERVER
 
     Stops the SQL Server services related to the default instance MSSQLSERVER on computers sql1 and sql2.
 
     .EXAMPLE
-    Stop-DbaSqlService -ComputerName $MyServers -Type SSRS
+    Stop-SqlService -ComputerName $MyServers -Type SSRS
 
     Stops the SQL Server related services of type "SSRS" (Reporting Services) on computers in the variable MyServers.
 
     .EXAMPLE
-    Stop-DbaSqlService -ComputerName sql1 -Type Engine -Force
+    Stop-SqlService -ComputerName sql1 -Type Engine -Force
 
     Stops SQL Server database engine services on sql1 forcing dependent SQL Server Agent services to stop as well.
 
@@ -104,7 +104,7 @@ function Stop-DbaSqlService {
             if ($Type) { $serviceParams.Type = $Type }
             if ($Credential) { $serviceParams.Credential = $Credential }
             if ($EnableException) { $serviceParams.Silent = $EnableException }
-            $serviceCollection = Get-DbaSqlService @serviceParams
+            $serviceCollection = Get-SqlService @serviceParams
         }
     }
     process {
@@ -115,7 +115,7 @@ function Stop-DbaSqlService {
         $processArray = [array]($processArray | Where-Object { (!$InstanceName -or $_.InstanceName -in $InstanceName) -and (!$Type -or $_.ServiceType -in $Type) })
         foreach ($service in $processArray) {
             if ($Force -and $service.ServiceType -eq 'Engine' -and !($processArray | Where-Object { $_.ServiceType -eq 'Agent' -and $_.InstanceName -eq $service.InstanceName -and $_.ComputerName -eq $service.ComputerName })) {
-                #Construct parameters to call Get-DbaSqlService
+                #Construct parameters to call Get-SqlService
                 $serviceParams = @{
                     ComputerName = $service.ComputerName
                     InstanceName = $service.InstanceName
@@ -123,7 +123,7 @@ function Stop-DbaSqlService {
                 }
                 if ($Credential) { $serviceParams.Credential = $Credential }
                 if ($EnableException) { $serviceParams.Silent = $EnableException }
-                $processArray += @(Get-DbaSqlService @serviceParams)
+                $processArray += @(Get-SqlService @serviceParams)
             }
         }
         if ($processArray) {

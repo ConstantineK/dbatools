@@ -4,7 +4,7 @@
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "Command returns proper info" {
-        $results = Get-DbaSqlRegistryRoot
+        $results = Get-SqlRegistryRoot
         $regexpath = "Software\\Microsoft\\Microsoft SQL Server"
 
         if ($results.count -gt 1) {

@@ -1,4 +1,4 @@
-function Get-DbaServerProtocol {
+function Get-ServerProtocol {
     <#
     .SYNOPSIS
     Gets the SQL Server related server protocols on a computer.
@@ -23,30 +23,30 @@ function Get-DbaServerProtocol {
     .NOTES
     Author: Klaas Vandenberghe ( @PowerDBAKlaas )
     Tags: Protocol
-    dbatools PowerShell module (https://dbatools.io)
-    Copyright (C) 2016 Chrissy LeMaire
+    sqlshellPowerShell module (https://dbatools.io)
+
     License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .LINK
-    https://dbatools.io/Get-DbaServerProtocol
+    https://dbatools.io/Get-ServerProtocol
 
     .EXAMPLE
-    Get-DbaServerProtocol -ComputerName sqlserver2014a
+    Get-ServerProtocol -ComputerName sqlserver2014a
 
     Gets the SQL Server related server protocols on computer sqlserver2014a.
 
     .EXAMPLE
-    'sql1','sql2','sql3' | Get-DbaServerProtocol
+    'sql1','sql2','sql3' | Get-ServerProtocol
 
     Gets the SQL Server related server protocols on computers sql1, sql2 and sql3.
 
     .EXAMPLE
-    Get-DbaServerProtocol -ComputerName sql1,sql2 | Out-Gridview
+    Get-ServerProtocol -ComputerName sql1,sql2 | Out-Gridview
 
     Gets the SQL Server related server protocols on computers sql1 and sql2, and shows them in a grid view.
 
     .EXAMPLE
-    (Get-DbaServerProtocol -ComputerName sql1 | Where { $_.DisplayName = 'via' }).Disable()
+    (Get-ServerProtocol -ComputerName sql1 | Where { $_.DisplayName = 'via' }).Disable()
 
     Disables the VIA ServerNetworkProtocol on computer sql1.
     If successful, returncode 0 is shown.
@@ -63,17 +63,17 @@ function Get-DbaServerProtocol {
 
     process {
         foreach ($Computer in $ComputerName.ComputerName) {
-            $Server = Resolve-DbaNetworkName -ComputerName $Computer -Credential $credential
+            $Server = Resolve-NetworkName -ComputerName $Computer -Credential $credential
             if ($Server.FullComputerName) {
                 $Computer = $server.FullComputerName
                 Write-Message -Level Verbose -Message "Getting SQL Server namespace on $computer"
-                $namespace = Get-DbaCmObject -ComputerName $Computer -NameSpace root\Microsoft\SQLServer -Query "Select * FROM __NAMESPACE WHERE Name Like 'ComputerManagement%'" -ErrorAction SilentlyContinue |
-                    Where-Object { (Get-DbaCmObject -ComputerName $Computer -Namespace $("root\Microsoft\SQLServer\" + $_.Name) -ClassName ServerNetworkProtocol -ErrorAction SilentlyContinue).count -gt 0 } |
+                $namespace = Get-CmObject -ComputerName $Computer -NameSpace root\Microsoft\SQLServer -Query "Select * FROM __NAMESPACE WHERE Name Like 'ComputerManagement%'" -ErrorAction SilentlyContinue |
+                    Where-Object { (Get-CmObject -ComputerName $Computer -Namespace $("root\Microsoft\SQLServer\" + $_.Name) -ClassName ServerNetworkProtocol -ErrorAction SilentlyContinue).count -gt 0 } |
                     Sort-Object Name -Descending | Select-Object -First 1
                 if ($namespace.Name) {
                     Write-Message -Level Verbose -Message "Getting Cim class ServerNetworkProtocol in Namespace $($namespace.Name) on $Computer"
                     try {
-                        $prot = Get-DbaCmObject -ComputerName $Computer -Namespace $("root\Microsoft\SQLServer\" + $namespace.Name) -ClassName ServerNetworkProtocol -ErrorAction SilentlyContinue
+                        $prot = Get-CmObject -ComputerName $Computer -Namespace $("root\Microsoft\SQLServer\" + $namespace.Name) -ClassName ServerNetworkProtocol -ErrorAction SilentlyContinue
                         $prot | Add-Member -Force -MemberType ScriptMethod -Name Enable -Value { Invoke-CimMethod -MethodName SetEnable -InputObject $this }
                         $prot | Add-Member -Force -MemberType ScriptMethod -Name Disable -Value { Invoke-CimMethod -MethodName SetDisable -InputObject $this }
                         foreach ($protocol in $prot) { Select-DefaultView -InputObject $protocol -Property 'PSComputerName as ComputerName', 'InstanceName', 'ProtocolDisplayName as DisplayName', 'ProtocolName as Name', 'MultiIpconfigurationSupport as MultiIP', 'Enabled as IsEnabled' }

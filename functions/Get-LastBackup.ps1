@@ -1,5 +1,5 @@
 #ValidationTags#Messaging,FlowControl,Pipeline,CodeStyle#
-function Get-DbaLastBackup {
+function Get-LastBackup {
     <#
         .SYNOPSIS
             Get date/time for last known backups of databases.
@@ -34,30 +34,30 @@ function Get-DbaLastBackup {
             Tags: DisasterRecovery, Backup
             Author: Klaas Vandenberghe ( @PowerDBAKlaas )
 
-            
-            
+
+
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
-            https://dbatools.io/Get-DbaLastBackup
+            https://dbatools.io/Get-LastBackup
 
         .EXAMPLE
-            Get-DbaLastBackup -SqlInstance ServerA\sql987
+            Get-LastBackup -SqlInstance ServerA\sql987
 
             Returns a custom object displaying Server, Database, RecoveryModel, LastFullBackup, LastDiffBackup, LastLogBackup, SinceFull, SinceDiff, SinceLog, Status, DatabaseCreated, DaysSinceDbCreated
 
         .EXAMPLE
-            Get-DbaLastBackup -SqlInstance ServerA\sql987
+            Get-LastBackup -SqlInstance ServerA\sql987
 
             Returns a custom object with Server name, Database name, and the date the last time backups were performed.
 
         .EXAMPLE
-            Get-DbaLastBackup -SqlInstance ServerA\sql987 | Select *
+            Get-LastBackup -SqlInstance ServerA\sql987 | Select *
 
             Returns a custom object with Server name, Database name, and the date the last time backups were performed, and also recoverymodel and calculations on how long ago backups were taken and what the status is.
 
         .EXAMPLE
-            Get-DbaLastBackup -SqlInstance ServerA\sql987 | Select * | Out-Gridview
+            Get-LastBackup -SqlInstance ServerA\sql987 | Select * | Out-Gridview
 
             Returns a gridview displaying Server, Database, RecoveryModel, LastFullBackup, LastDiffBackup, LastLogBackup, SinceFull, SinceDiff, SinceLog, Status, DatabaseCreated, DaysSinceDbCreated.
     #>
@@ -75,7 +75,7 @@ function Get-DbaLastBackup {
         [switch][Alias('Silent')]$EnableException
     )
     begin {
-        function Get-DbaDateOrNull ($TimeSpan) {
+        function Get-DateOrNull ($TimeSpan) {
             if ($TimeSpan -eq 0) {
                 return $null
             }
@@ -103,10 +103,10 @@ function Get-DbaLastBackup {
             if ($ExcludeDatabase) {
                 $dbs = $dbs | Where-Object Name -NotIn $ExcludeDatabase
             }
-            # Get-DbaBackupHistory -Last would make the job in one query but SMO's (and this) report the last backup of this type irregardless of the chain
-            $FullHistory = Get-DbaBackupHistory -SqlInstance $instance  -Database $dbs.Name -LastFull -IncludeCopyOnly -Raw
-            $DiffHistory = Get-DbaBackupHistory -SqlInstance $instance  -Database $dbs.Name -LastDiff -IncludeCopyOnly -Raw
-            $IncrHistory = Get-DbaBackupHistory -SqlInstance $instance  -Database $dbs.Name -LastLog -IncludeCopyOnly -Raw
+            # Get-BackupHistory -Last would make the job in one query but SMO's (and this) report the last backup of this type irregardless of the chain
+            $FullHistory = Get-BackupHistory -SqlInstance $instance  -Database $dbs.Name -LastFull -IncludeCopyOnly -Raw
+            $DiffHistory = Get-BackupHistory -SqlInstance $instance  -Database $dbs.Name -LastDiff -IncludeCopyOnly -Raw
+            $IncrHistory = Get-BackupHistory -SqlInstance $instance  -Database $dbs.Name -LastLog -IncludeCopyOnly -Raw
             foreach ($db in $dbs) {
                 Write-Message -Level Verbose -Message "Processing $db on $instance"
 
@@ -162,9 +162,9 @@ function Get-DbaLastBackup {
                     LastFullBackup     = [DbaDateTime]$LastFullBackup
                     LastDiffBackup     = [DbaDateTime]$LastDiffBackup
                     LastLogBackup      = [DbaDateTime]$LastIncrBackup
-                    SinceFull          = Get-DbaDateOrNull -TimeSpan $SinceFull_
-                    SinceDiff          = Get-DbaDateOrNull -TimeSpan $SinceDiff_
-                    SinceLog           = Get-DbaDateOrNull -TimeSpan $SinceLog_
+                    SinceFull          = Get-DateOrNull -TimeSpan $SinceFull_
+                    SinceDiff          = Get-DateOrNull -TimeSpan $SinceDiff_
+                    SinceLog           = Get-DateOrNull -TimeSpan $SinceLog_
                     DatabaseCreated    = $db.createDate
                     DaysSinceDbCreated = $daysSinceDbCreated
                     Status             = $status

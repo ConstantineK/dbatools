@@ -12,7 +12,7 @@ Describe "$CommandName Unit Tests" -Tags 'UnitTests' {
         #>
         $paramCount = 6
         $defaultParamCount = 11
-        [object[]]$params = (Get-ChildItem function:\Get-DbaDbRole).Parameters.Keys
+        [object[]]$params = (Get-ChildItem function:\Get-DbRole).Parameters.Keys
         $knownParameters = 'SqlInstance', 'SqlCredential', 'EnableException', 'Database', 'ExcludeDatabase', 'ExcludeFixedRole'
         It "Should contain our specific parameters" {
             ((Compare-Object -ReferenceObject $knownParameters -DifferenceObject $params -IncludeEqual | Where-Object SideIndicator -eq "==").Count) | Should Be $paramCount
@@ -23,22 +23,22 @@ Describe "$CommandName Unit Tests" -Tags 'UnitTests' {
     }
 }
 
-Describe "Get-DbaDbRole Integration Tests" -Tag "IntegrationTests" {
+Describe "Get-DbRole Integration Tests" -Tag "IntegrationTests" {
     Context "parameters work" {
         It "returns no roles from excluded DB with -ExcludeDatabase" {
-            $results = Get-DbaDbRole -SqlInstance $script:instance2 -ExcludeDatabase master
+            $results = Get-DbRole -SqlInstance $script:instance2 -ExcludeDatabase master
             $results.where( {$_.Database -eq 'master'}).count | Should Be 0
         }
         It "returns only roles from selected DB with -Database" {
-            $results = Get-DbaDbRole -SqlInstance $script:instance2 -Database master
+            $results = Get-DbRole -SqlInstance $script:instance2 -Database master
             $results.where( {$_.Database -ne 'master'}).count | Should Be 0
         }
         It "returns no fixed roles with -ExcludeFixedRole" {
-            $results = Get-DbaDbRole -SqlInstance $script:instance2 -ExcludeFixedRole
+            $results = Get-DbRole -SqlInstance $script:instance2 -ExcludeFixedRole
             $results.where( {$_.name -match 'db_datareader|db_datawriter|db_ddladmin'}).count | Should Be 0
         }
         It "returns fixed roles without -ExcludeFixedRole" {
-            $results = Get-DbaDbRole -SqlInstance $script:instance2
+            $results = Get-DbRole -SqlInstance $script:instance2
             $results.where( {$_.name -match 'db_datareader|db_datawriter|db_ddladmin'}).count | Should BeGreaterThan 0
         }
     }

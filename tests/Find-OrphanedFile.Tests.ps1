@@ -6,9 +6,9 @@ Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
     Context "Orphaned files are correctly identified" {
         BeforeAll {
             $dbname = "dbatoolsci_orphanedfile"
-            $server = Connect-DbaInstance -SqlInstance $script:instance2
+            $server = Connect-Instance -SqlInstance $script:instance2
             $null = $server.Query("CREATE DATABASE $dbname")
-            $result = Get-DbaDatabase -SqlInstance $script:instance2 -Database $dbname
+            $result = Get-Database -SqlInstance $script:instance2 -Database $dbname
             if ($result.count -eq 0) {
                 it "has failed setup" {
                     Set-TestInconclusive -message "Setup failed"
@@ -17,10 +17,10 @@ Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
             }
         }
         AfterAll {
-            Get-DbaDatabase -SqlInstance $script:instance2 -Database $dbname | Remove-DbaDatabase -Confirm:$false
+            Get-Database -SqlInstance $script:instance2 -Database $dbname | Remove-Database -Confirm:$false
         }
-        $null = Detach-DbaDatabase -SqlInstance $script:instance2 -Database $dbname -Force
-        $results = Find-DbaOrphanedFile -SqlInstance $script:instance2
+        $null = Detach-Database -SqlInstance $script:instance2 -Database $dbname -Force
+        $results = Find-OrphanedFile -SqlInstance $script:instance2
 
         It "Has the correct default properties" {
             $ExpectedStdProps = 'ComputerName,InstanceName,SqlInstance,Filename,RemoteFilename'.Split(',')
@@ -37,7 +37,7 @@ Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
 
         $results.FileName | Remove-Item
 
-        $results = Find-DbaOrphanedFile -SqlInstance $script:instance2
+        $results = Find-OrphanedFile -SqlInstance $script:instance2
         It "Finds zero files after cleaning up" {
             $results.Count | Should Be 0
         }
@@ -54,7 +54,7 @@ Describe "$CommandName Unit Tests" -Tags 'UnitTests' {
         #>
         $paramCount = 7
         $defaultParamCount = 11
-        [object[]]$params = (Get-ChildItem function:\Find-DbaOrphanedFile).Parameters.Keys
+        [object[]]$params = (Get-ChildItem function:\Find-OrphanedFile).Parameters.Keys
         $knownParameters = 'SqlInstance', 'SqlCredential', 'Path', 'FileType', 'LocalOnly', 'RemoteOnly', 'EnableException'
         It "Should contain our specific parameters" {
             ((Compare-Object -ReferenceObject $knownParameters -DifferenceObject $params -IncludeEqual | Where-Object SideIndicator -eq "==").Count) | Should Be $paramCount

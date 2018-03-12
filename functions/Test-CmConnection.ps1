@@ -1,4 +1,4 @@
-function Test-DbaCmConnection {
+function Test-CmConnection {
     <#
     .SYNOPSIS
         Tests over which paths a computer can be managed.
@@ -11,7 +11,7 @@ function Test-DbaCmConnection {
             - Cim over DCOM
             - Wmi
             - PowerShellRemoting
-        Results will be written to the connectivity cache and will cause Get-DbaCmObject and Invoke-DbaCmMethod to connect using the way most likely to succeed. This way, it is likely the other commands will take less time to execute. These others too cache their results, in order to dynamically update connection statistics.
+        Results will be written to the connectivity cache and will cause Get-CmObject and Invoke-CmMethod to connect using the way most likely to succeed. This way, it is likely the other commands will take less time to execute. These others too cache their results, in order to dynamically update connection statistics.
 
         This function ignores global configuration settings limiting which protocols may be used.
 
@@ -41,26 +41,26 @@ function Test-DbaCmConnection {
         Author: Fred Winmann (@FredWeinmann)
         Tags: ComputerManagement
 
-        
-        
+
+
         License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         **This function should not be called from within dbatools. It is meant as a tool for users only.**
 
     .LINK
-        https://dbatools.io/Test-DbaCmConnection
+        https://dbatools.io/Test-CmConnection
 
     .EXAMPLE
-        Test-DbaCmConnection -ComputerName sql2014
+        Test-CmConnection -ComputerName sql2014
 
-        Performs a full-spectrum connection test against the computer sql2014. The results will be reported and registered. Future calls from Get-DbaCmObject will recognize the results and optimize the query.
+        Performs a full-spectrum connection test against the computer sql2014. The results will be reported and registered. Future calls from Get-CmObject will recognize the results and optimize the query.
 
     .EXAMPLE
-        Test-DbaCmConnection -ComputerName sql2014 -Credential $null -Type CimDCOM, CimRM
+        Test-CmConnection -ComputerName sql2014 -Credential $null -Type CimDCOM, CimRM
 
         This test will run a connectivity test of CIM over DCOM and CIM over WinRM against the computer sql2014 using Windows Authentication.
 
-        The results will be reported and registered. Future calls from Get-DbaCmObject will recognize the results and optimize the query.
+        The results will be reported and registered. Future calls from Get-CmObject will recognize the results and optimize the query.
     #>
     [CmdletBinding()]
     Param (
@@ -83,8 +83,8 @@ function Test-DbaCmConnection {
 
     Begin {
         #region Configuration Values
-        $disable_cache = Get-DbaConfigValue -Name "ComputerManagement.Cache.Disable.All" -Fallback $false
-        $disable_badcredentialcache = Get-DbaConfigValue -Name "ComputerManagement.Cache.Disable.BadCredentialList" -Fallback $false
+        $disable_cache = Get-ConfigValue -Name "ComputerManagement.Cache.Disable.All" -Fallback $false
+        $disable_badcredentialcache = Get-ConfigValue -Name "ComputerManagement.Cache.Disable.BadCredentialList" -Fallback $false
         #endregion Configuration Values
 
         #region Helper Functions

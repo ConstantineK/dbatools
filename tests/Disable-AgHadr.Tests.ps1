@@ -10,7 +10,7 @@ Describe "$CommandName Unit Tests" -Tag "UnitTests" {
             Commands with SupportShouldProcess = 13
         #>
         $defaultParamCount = 13
-        [object[]]$params = (Get-ChildItem function:\Disable-DbaAgHadr).Parameters.Keys
+        [object[]]$params = (Get-ChildItem function:\Disable-AgHadr).Parameters.Keys
         $knownParameters = 'SqlInstance', 'Credential', 'Force', 'EnableException'
         It "Should contian our specifc parameters" {
             ( (Compare-Object -ReferenceObject $knownParameters -DifferenceObject $params -IncludeEqual | Where-Object SideIndicator -eq "==").Count ) | Should Be $paramCount

@@ -1,4 +1,4 @@
-function Get-DbaDefaultPath {
+function Get-DefaultPath {
     <#
     .SYNOPSIS
         Gets the default SQL Server paths for data, logs and backups
@@ -19,21 +19,21 @@ function Get-DbaDefaultPath {
 
     .NOTES
         Tags: Config
-        
-        
+
+
         License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .LINK
-        https://dbatools.io/Get-DbaDefaultPath
+        https://dbatools.io/Get-DefaultPath
 
     .EXAMPLE
-        Get-DbaDefaultPath -SqlInstance sql01\sharepoint
+        Get-DefaultPath -SqlInstance sql01\sharepoint
 
         Returns the default file paths for sql01\sharepoint
 
     .EXAMPLE
         $servers = "sql2014","sql2016", "sqlcluster\sharepoint"
-        $servers | Get-DbaDefaultPath
+        $servers | Get-DefaultPath
 
         Returns the default file paths for "sql2014","sql2016" and "sqlcluster\sharepoint"
 
@@ -72,7 +72,7 @@ function Get-DbaDefaultPath {
             #>
 
             if ($datapath -eq [System.DBNull]::Value -or $datapath.Length -eq 0) {
-                $datapath = Split-Path (Get-DbaDatabase -SqlInstance $server -Database model).FileGroups[0].Files[0].FileName
+                $datapath = Split-Path (Get-Database -SqlInstance $server -Database model).FileGroups[0].Files[0].FileName
             }
 
             if ($datapath.Length -eq 0) {
@@ -94,7 +94,7 @@ function Get-DbaDefaultPath {
             #>
 
             if ($logpath -eq [System.DBNull]::Value -or $logpath.Length -eq 0) {
-                $logpath = Split-Path (Get-DbaDatabase -SqlInstance $server -Database model).LogFiles.FileName
+                $logpath = Split-Path (Get-Database -SqlInstance $server -Database model).LogFiles.FileName
             }
 
             if ($logpath.Length -eq 0) {

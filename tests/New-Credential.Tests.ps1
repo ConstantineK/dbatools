@@ -12,18 +12,18 @@ Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
             $null = net user $login $plaintext /add *>&1
         }
         # remove old credentials
-        foreach ($Credential in (Get-DbaCredential -SqlInstance $script:instance1)) {
+        foreach ($Credential in (Get-Credential -SqlInstance $script:instance1)) {
             $Credential.Drop()
         }
-        foreach ($Credential in (Get-DbaCredential -SqlInstance $script:instance2)) {
+        foreach ($Credential in (Get-Credential -SqlInstance $script:instance2)) {
             $Credential.Drop()
         }
     }
     AfterAll {
-        foreach ($Credential in (Get-DbaCredential -SqlInstance $script:instance1)) {
+        foreach ($Credential in (Get-Credential -SqlInstance $script:instance1)) {
             $Credential.Drop()
         }
-        foreach ($Credential in (Get-DbaCredential -SqlInstance $script:instance2)) {
+        foreach ($Credential in (Get-Credential -SqlInstance $script:instance2)) {
             $Credential.Drop()
         }
         foreach ($login in $logins) {
@@ -33,11 +33,11 @@ Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
 
     Context "Create a new credential" {
         It "Should create new credentials with the proper properties" {
-            $results = New-DbaCredential -SqlInstance $script:instance1 -Name thorcred -CredentialIdentity thor -Password $password
+            $results = New-Credential -SqlInstance $script:instance1 -Name thorcred -CredentialIdentity thor -Password $password
             $results.Name | Should Be "thorcred"
             $results.Identity | Should Be "thor"
 
-            $results = New-DbaCredential -SqlInstance $script:instance1 -CredentialIdentity thorsmomma -Password $password
+            $results = New-Credential -SqlInstance $script:instance1 -CredentialIdentity thorsmomma -Password $password
             $results | Should Not Be $null
         }
     }

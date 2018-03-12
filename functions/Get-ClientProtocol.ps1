@@ -1,4 +1,4 @@
-function Get-DbaClientProtocol {
+function Get-ClientProtocol {
     <#
         .SYNOPSIS
             Gets the SQL Server related client protocols on a computer.
@@ -27,25 +27,25 @@ function Get-DbaClientProtocol {
 						License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
-            https://dbatools.io/Get-DbaClientProtocol
+            https://dbatools.io/Get-ClientProtocol
 
         .EXAMPLE
-            Get-DbaClientProtocol -ComputerName sqlserver2014a
+            Get-ClientProtocol -ComputerName sqlserver2014a
 
             Gets the SQL Server related client protocols on computer sqlserver2014a.
 
         .EXAMPLE
-            'sql1','sql2','sql3' | Get-DbaClientProtocol
+            'sql1','sql2','sql3' | Get-ClientProtocol
 
             Gets the SQL Server related client protocols on computers sql1, sql2 and sql3.
 
         .EXAMPLE
-            Get-DbaClientProtocol -ComputerName sql1,sql2 | Out-Gridview
+            Get-ClientProtocol -ComputerName sql1,sql2 | Out-Gridview
 
             Gets the SQL Server related client protocols on computers sql1 and sql2, and shows them in a grid view.
 
         .EXAMPLE
-            (Get-DbaClientProtocol -ComputerName sql2 | Where { $_.DisplayName = 'via' }).Disable()
+            (Get-ClientProtocol -ComputerName sql2 | Where { $_.DisplayName = 'via' }).Disable()
 
             Disables the VIA ClientNetworkProtocol on computer sql2.
             If succesfull, returncode 0 is shown.
@@ -61,18 +61,18 @@ function Get-DbaClientProtocol {
 
     process {
         foreach ( $computer in $ComputerName.ComputerName ) {
-            $server = Resolve-DbaNetworkName -ComputerName $computer -Credential $credential
+            $server = Resolve-NetworkName -ComputerName $computer -Credential $credential
             if ( $server.FullComputerName ) {
                 $computer = $server.FullComputerName
                 Write-Message -Level Verbose -Message "Getting SQL Server namespace on $computer" -EnableException $EnableException
-                $namespace = Get-DbaCmObject -ComputerName $computer -Namespace root\Microsoft\SQLServer -Query "Select * FROM __NAMESPACE WHERE Name LIke 'ComputerManagement%'" -ErrorAction SilentlyContinue |
-                    Where-Object {(Get-DbaCmObject -ComputerName $computer -Namespace $("root\Microsoft\SQLServer\" + $_.Name) -ClassName ClientNetworkProtocol -ErrorAction SilentlyContinue).count -gt 0} |
+                $namespace = Get-CmObject -ComputerName $computer -Namespace root\Microsoft\SQLServer -Query "Select * FROM __NAMESPACE WHERE Name LIke 'ComputerManagement%'" -ErrorAction SilentlyContinue |
+                    Where-Object {(Get-CmObject -ComputerName $computer -Namespace $("root\Microsoft\SQLServer\" + $_.Name) -ClassName ClientNetworkProtocol -ErrorAction SilentlyContinue).count -gt 0} |
                     Sort-Object Name -Descending | Select-Object -First 1
 
                 if ( $namespace.Name ) {
                     Write-Message -Level Verbose -Message "Getting Cim class ClientNetworkProtocol in Namespace $($namespace.Name) on $computer" -EnableException $EnableException
                     try {
-                        $prot = Get-DbaCmObject -ComputerName $computer -Namespace $("root\Microsoft\SQLServer\" + $namespace.Name) -ClassName ClientNetworkProtocol -ErrorAction SilentlyContinue
+                        $prot = Get-CmObject -ComputerName $computer -Namespace $("root\Microsoft\SQLServer\" + $namespace.Name) -ClassName ClientNetworkProtocol -ErrorAction SilentlyContinue
 
                         $prot | Add-Member -Force -MemberType ScriptProperty -Name IsEnabled -Value { switch ( $this.ProtocolOrder ) { 0 { $false } default { $true } } }
                         $prot | Add-Member -Force -MemberType ScriptMethod -Name Enable -Value {Invoke-CimMethod -MethodName SetEnable -InputObject $this }

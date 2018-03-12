@@ -1,4 +1,4 @@
-function Remove-DbaDatabaseSafely {
+function Remove-DatabaseSafely {
     <#
         .SYNOPSIS
             Safely removes a SQL Database and creates an Agent Job to restore it.
@@ -79,15 +79,15 @@ function Remove-DbaDatabaseSafely {
             Tags: DisasterRecovery, Backup, Restore, Databases
             Author: Rob Sewell @SQLDBAWithBeard, sqldbawithabeard.com
 
-            
-            
+
+
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
-            https://dbatools.io/Remove-DbaDatabaseSafely
+            https://dbatools.io/Remove-DatabaseSafely
 
         .EXAMPLE
-            Remove-DbaDatabaseSafely -SqlInstance 'Fade2Black' -Database RideTheLightning -BackupFolder 'C:\MSSQL\Backup\Rationalised - DO NOT DELETE'
+            Remove-DatabaseSafely -SqlInstance 'Fade2Black' -Database RideTheLightning -BackupFolder 'C:\MSSQL\Backup\Rationalised - DO NOT DELETE'
 
             Performs a DBCC CHECKDB on database RideTheLightning on server Fade2Black. If there are no errors, the database is backup to the folder C:\MSSQL\Backup\Rationalised - DO NOT DELETE. Then, an Agent job to restore the database from that backup is created. The database is then dropped, the Agent job to restore it run, a DBCC CHECKDB run against the restored database, and then it is dropped again.
 
@@ -95,26 +95,26 @@ function Remove-DbaDatabaseSafely {
 
         .EXAMPLE
             $Database = 'DemoNCIndex','RemoveTestDatabase'
-            Remove-DbaDatabaseSafely -SqlInstance 'Fade2Black' -Database $Database -BackupFolder 'C:\MSSQL\Backup\Rationalised - DO NOT DELETE'
+            Remove-DatabaseSafely -SqlInstance 'Fade2Black' -Database $Database -BackupFolder 'C:\MSSQL\Backup\Rationalised - DO NOT DELETE'
 
             Performs a DBCC CHECKDB on two databases, 'DemoNCIndex' and 'RemoveTestDatabase' on server Fade2Black. Then, an Agent job to restore each database from those backups is created. The databases are then dropped, the Agent jobs to restore them run, a DBCC CHECKDB run against the restored databases, and then they are dropped again.
 
             Any DBCC errors will be written to your documents folder
 
         .EXAMPLE
-            Remove-DbaDatabaseSafely -SqlInstance 'Fade2Black' -DestinationServer JusticeForAll -Database RideTheLightning -BackupFolder '\\BACKUPSERVER\BACKUPSHARE\MSSQL\Rationalised - DO NOT DELETE'
+            Remove-DatabaseSafely -SqlInstance 'Fade2Black' -DestinationServer JusticeForAll -Database RideTheLightning -BackupFolder '\\BACKUPSERVER\BACKUPSHARE\MSSQL\Rationalised - DO NOT DELETE'
 
             Performs a DBCC CHECKDB on database RideTheLightning on server Fade2Black. If there are no errors, the database is backup to the folder \\BACKUPSERVER\BACKUPSHARE\MSSQL\Rationalised - DO NOT DELETE . Then, an Agent job is created on server JusticeForAll to restore the database from that backup is created. The database is then dropped on Fade2Black, the Agent job to restore it on JusticeForAll is run, a DBCC CHECKDB run against the restored database, and then it is dropped from JusticeForAll.
 
             Any DBCC errors will be written to your documents folder
 
         .EXAMPLE
-            Remove-DbaDatabaseSafely -SqlInstance IronMaiden -Database $Database -DestinationServer TheWildHearts -BackupFolder Z:\Backups -NoDbccCheckDb -UseDefaultFilePaths -JobOwner 'THEBEARD\Rob'
+            Remove-DatabaseSafely -SqlInstance IronMaiden -Database $Database -DestinationServer TheWildHearts -BackupFolder Z:\Backups -NoDbccCheckDb -UseDefaultFilePaths -JobOwner 'THEBEARD\Rob'
 
             For the databases $Database on the server IronMaiden a DBCC CHECKDB will not be performed before backing up the databases to the folder Z:\Backups. Then, an Agent job is created on server TheWildHearts with a Job Owner of THEBEARD\Rob to restore each database from that backup using the instance's default file paths. The database(s) is(are) then dropped on IronMaiden, the Agent job(s) run, a DBCC CHECKDB run on the restored database(s), and then the database(s) is(are) dropped.
 
         .EXAMPLE
-            Remove-DbaDatabaseSafely -SqlInstance IronMaiden -Database $Database -DestinationServer TheWildHearts -BackupFolder Z:\Backups -UseDefaultFilePaths -ContinueAfterDbccError
+            Remove-DatabaseSafely -SqlInstance IronMaiden -Database $Database -DestinationServer TheWildHearts -BackupFolder Z:\Backups -UseDefaultFilePaths -ContinueAfterDbccError
 
             The databases $Database on the server IronMaiden will be backed up the to the folder Z:\Backups. Then, an Agent job is created on server TheWildHearts with a Job Owner of THEBEARD\Rob to restore each database from that backup using the instance's default file paths. The database(s) is(are) then dropped on IronMaiden, the Agent job(s) run, a DBCC CHECKDB run on the restored database(s), and then the database(s) is(are) dropped.
 
@@ -124,14 +124,14 @@ function Remove-DbaDatabaseSafely {
     Param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [Alias("ServerInstance", "SqlServer")]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [Alias("Credential")]
         [PSCredential]
         $SqlCredential,
         [Alias("Databases")]
         [object[]]$Database,
         [parameter(Mandatory = $false)]
-        [DbaInstanceParameter]$Destination = $sqlinstance,
+        $Destination = $sqlinstance,
         [PSCredential]
         $DestinationCredential,
         [parameter(Mandatory = $false)]
@@ -192,7 +192,7 @@ function Remove-DbaDatabaseSafely {
             $database = ($sourceserver.databases | Where-Object { $_.IsSystemObject -eq $false -and ($_.Status -match 'Offline') -eq $false }).Name
         }
 
-        if (!(Test-DbaSqlPath -SqlInstance $destserver -Path $backupFolder)) {
+        if (!(Test-SqlPath -SqlInstance $destserver -Path $backupFolder)) {
             $serviceaccount = $destserver.ServiceAccount
             Stop-Function -Message "Can't access $backupFolder Please check if $serviceaccount has permissions." -InnerErrorRecord $_ -Target $backupFolder
         }
@@ -408,7 +408,7 @@ function Remove-DbaDatabaseSafely {
                 Stop-Function -Message "$dbname does not exist on $source. Aborting routine for this database." -Continue
             }
 
-            $lastFullBckDuration = (Get-DbaBackupHistory -SqlInstance $sourceserver -Database $dbname -LastFull).Duration
+            $lastFullBckDuration = (Get-BackupHistory -SqlInstance $sourceserver -Database $dbname -LastFull).Duration
 
             if (-NOT ([string]::IsNullOrEmpty($lastFullBckDuration))) {
                 $lastFullBckDurationSec = $lastFullBckDuration.TotalSeconds
@@ -433,7 +433,7 @@ function Remove-DbaDatabaseSafely {
                 }
             }
             else {
-                Write-Message -Level Verbose -Message "Couldn't find last full backup time for database $dbname using Get-DbaBackupHistory."
+                Write-Message -Level Verbose -Message "Couldn't find last full backup time for database $dbname using Get-BackupHistory."
             }
 
             $jobname = "Rationalised Database Restore Script for $dbname"
@@ -610,7 +610,7 @@ function Remove-DbaDatabaseSafely {
             if ($Pscmdlet.ShouldProcess($destination, "Dropping Database $dbname on $sourceserver")) {
                 ## Drop the database
                 try {
-                    $null = Remove-DbaDatabase -SqlInstance $sourceserver -Database $dbname -Confirm:$false
+                    $null = Remove-Database -SqlInstance $sourceserver -Database $dbname -Confirm:$false
                     Write-Message -Level Verbose -Message "Dropped $dbname Database on $source prior to running the Agent Job"
                 }
                 catch {
@@ -674,7 +674,7 @@ function Remove-DbaDatabaseSafely {
             if ($Pscmdlet.ShouldProcess($dbname, "Dropping Database $dbname on $destination")) {
                 ## Drop the database
                 try {
-                    $null = Remove-DbaDatabase -SqlInstance $sourceserver -Database $dbname -Confirm:$false
+                    $null = Remove-Database -SqlInstance $sourceserver -Database $dbname -Confirm:$false
                     Write-Message -Level Verbose -Message "Dropped $dbname database on $destination."
                 }
                 catch {
@@ -701,6 +701,6 @@ function Remove-DbaDatabaseSafely {
             Write-Message -Level Verbose -Message "Script Duration: $Duration."
         }
 
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Remove-SqlDatabaseSafely
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Remove-SqlDatabaseSafely
     }
 }

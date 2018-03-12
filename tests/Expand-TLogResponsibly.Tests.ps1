@@ -4,15 +4,15 @@
 
 Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
     BeforeAll {
-        $server = Connect-DbaInstance -SqlInstance $script:instance1
+        $server = Connect-Instance -SqlInstance $script:instance1
         $db1 = "dbatoolsci_expand"
         $server.Query("CREATE DATABASE $db1")
     }
     AfterAll {
-        Remove-DbaDatabase -Confirm:$false -SqlInstance $script:instance1 -Database $db1
+        Remove-Database -Confirm:$false -SqlInstance $script:instance1 -Database $db1
     }
 
-    $results = Expand-DbaTLogResponsibly -SqlInstance $script:instance1 -Database $db1 -TargetLogSizeMB 128
+    $results = Expand-TLogResponsibly -SqlInstance $script:instance1 -Database $db1 -TargetLogSizeMB 128
 
     It -Skip "Should have correct properties" {
         $ExpectedProps = 'ComputerName,InstanceName,SqlInstance,Database,ID,Name,LogFileCount,InitialSize,CurrentSize,InitialVLFCount,CurrentVLFCount'.Split(',')

@@ -4,7 +4,7 @@ function Get-BackupAncientHistory {
             Returns details of the last full backup of a SQL Server 2000 database
 
         .DESCRIPTION
-            Backup History command to pull limited history from a SQL 2000 instance. If not using SQL 2000, please use Get-DbaBackupHistory which pulls more infomation, and has more options. This is just here to cope with 2k and copy-DbaDatabase issues
+            Backup History command to pull limited history from a SQL 2000 instance. If not using SQL 2000, please use Get-BackupHistory which pulls more infomation, and has more options. This is just here to cope with 2k and copy-Database issues
 
         .PARAMETER SqlInstance
             SQL Server name or SMO object representing the SQL Server to connect to. This can be a collection and receive pipeline input to allow the function to be executed against multiple SQL Server instances.
@@ -18,8 +18,8 @@ function Get-BackupAncientHistory {
         .NOTES
         Author: Stuart Moore (@napalmgram), stuart-moore.com
 
-        dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-        Copyright (C) 2016 Chrissy LeMaire
+        sqlshellPowerShell module (https://dbatools.io, clemaire@gmail.com)
+
         License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     #>
@@ -27,7 +27,7 @@ function Get-BackupAncientHistory {
     Param (
         [parameter(Mandatory = $true)]
         [Alias("ServerInstance", "SqlServer")]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [Alias("Credential")]
         [PsCredential]$SqlCredential,
         [Alias("Databases")]
@@ -45,7 +45,7 @@ function Get-BackupAncientHistory {
             Stop-Function -Message "Failed to process Instance $SqlInstance." -InnerErrorRecord $_ -Target $SqlInstance -Continue
         }
         if ($server.SoftwareVersionMajor -gt 8) {
-            Write-Message -Level Warning -Message "This is not the function you're looking for. This is for SQL 2000 only, please use Get-DbaBackupHistory instead. It's much nicer"
+            Write-Message -Level Warning -Message "This is not the function you're looking for. This is for SQL 2000 only, please use Get-BackupHistory instead. It's much nicer"
         }
 
         $databases = @()

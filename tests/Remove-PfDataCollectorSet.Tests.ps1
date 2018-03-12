@@ -4,24 +4,24 @@
 
 Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
     BeforeEach {
-        $null = Get-DbaPfDataCollectorSetTemplate -Template 'Long Running Queries' | Import-DbaPfDataCollectorSetTemplate
+        $null = Get-PfDataCollectorSetTemplate -Template 'Long Running Queries' | Import-PfDataCollectorSetTemplate
     }
     Context "Verifying command return the proper results" {
 
         It "removes the data collector set" {
-            $results = Get-DbaPfDataCollectorSet -CollectorSet 'Long Running Queries' | Remove-DbaPfDataCollectorSet -Confirm:$false
+            $results = Get-PfDataCollectorSet -CollectorSet 'Long Running Queries' | Remove-PfDataCollectorSet -Confirm:$false
             $results.Name | Should Be 'Long Running Queries'
             $results.Status | Should Be 'Removed'
         }
 
         It "returns a result" {
-            $results = Get-DbaPfDataCollectorSet -CollectorSet 'Long Running Queries'
+            $results = Get-PfDataCollectorSet -CollectorSet 'Long Running Queries'
             $results.Name | Should Be 'Long Running Queries'
         }
 
         It "returns no results" {
-            $null = Remove-DbaPfDataCollectorSet -CollectorSet 'Long Running Queries' -Confirm:$false
-            $results = Get-DbaPfDataCollectorSet -CollectorSet 'Long Running Queries'
+            $null = Remove-PfDataCollectorSet -CollectorSet 'Long Running Queries' -Confirm:$false
+            $results = Get-PfDataCollectorSet -CollectorSet 'Long Running Queries'
             $results.Name | Should Be $null
         }
     }

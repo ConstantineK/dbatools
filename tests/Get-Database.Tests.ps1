@@ -5,21 +5,21 @@
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 
     Context "Count system databases on localhost" {
-        $results = Get-DbaDatabase -SqlInstance $script:instance1 -ExcludeAllUserDb
+        $results = Get-Database -SqlInstance $script:instance1 -ExcludeAllUserDb
         It "reports the right number of databases" {
             $results.Count | Should Be 4
         }
     }
 
     Context "Check that temppb database is in Simple recovery mode" {
-        $results = Get-DbaDatabase -SqlInstance $script:instance1 -Database tempdb
+        $results = Get-Database -SqlInstance $script:instance1 -Database tempdb
         It "tempdb's recovery mode is Simple" {
             $results.RecoveryModel | Should Be "Simple"
         }
     }
 
     Context "Check that master database is accessible" {
-        $results = Get-DbaDatabase -SqlInstance $script:instance1 -Database master
+        $results = Get-Database -SqlInstance $script:instance1 -Database master
         It "master is accessible" {
             $results.IsAccessible | Should Be $true
         }
@@ -29,7 +29,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 Describe "$commandname Unit Tests" -Tags "UnitTests", Get-DBADatabase {
     BeforeAll {
         ## Ensure it is the module that is being coded that is in the session when running just this Pester test
-        #  Remove-Module dbatools -Force -ErrorAction SilentlyContinue
+        #  Remove-Module sqlshell-Force -ErrorAction SilentlyContinue
         #  $Base = Split-Path -parent $PSCommandPath
         #  Import-Module $Base\..\dbatools.psd1
     }
@@ -52,7 +52,7 @@ Describe "$commandname Unit Tests" -Tags "UnitTests", Get-DBADatabase {
                     }
                 ); #databases
             } #object
-        } -ModuleName dbatools #mock connect-sqlserver
+        } -ModuleName sqlshell#mock connect-sqlserver
         function Invoke-QueryRawDatabases { }
         Mock Invoke-QueryRawDatabases -MockWith {
             [object]@(
@@ -64,7 +64,7 @@ Describe "$commandname Unit Tests" -Tags "UnitTests", Get-DBADatabase {
             )
         } -ModuleName dbatools
         It "Should Call Stop-Function if NoUserDbs and NoSystemDbs are specified" {
-            Get-DbaDatabase -SqlInstance Dummy -ExcludeAllSystemDb -ExcludeAllUserDb -ErrorAction SilentlyContinue | Should Be
+            Get-Database -SqlInstance Dummy -ExcludeAllSystemDb -ExcludeAllUserDb -ErrorAction SilentlyContinue | Should Be
         }
         It "Validates that Stop Function Mock has been called" {
             $assertMockParams = @{
@@ -102,7 +102,7 @@ Describe "$commandname Unit Tests" -Tags "UnitTests", Get-DBADatabase {
                             }
                     }
                 } #object
-            } -ModuleName dbatools #mock connect-sqlserver
+            } -ModuleName sqlshell#mock connect-sqlserver
             function Invoke-QueryDBlastUsed { }
             Mock Invoke-QueryDBlastUsed -MockWith {
                 [object]
@@ -122,8 +122,8 @@ Describe "$commandname Unit Tests" -Tags "UnitTests", Get-DBADatabase {
                     }
                 )
             } -ModuleName dbatools
-            (Get-DbaDatabase -SqlInstance SQLServerName -IncludeLastUsed).LastRead -ne $null | Should Be $true
-            (Get-DbaDatabase -SqlInstance SQLServerName -IncludeLastUsed).LastWrite -ne $null | Should Be $true
+            (Get-Database -SqlInstance SQLServerName -IncludeLastUsed).LastRead -ne $null | Should Be $true
+            (Get-Database -SqlInstance SQLServerName -IncludeLastUsed).LastWrite -ne $null | Should Be $true
         }
         It "Validates that Connect-SqlInstance Mock has been called" {
             $assertMockParams = @{

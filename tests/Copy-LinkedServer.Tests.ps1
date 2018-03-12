@@ -24,8 +24,8 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname=N'dbatools-localhost2',@useself=N'False',@locallogin=NULL,@rmtuser=N'testuser1',@rmtpassword='supfool';"
 
         try {
-            $server1 = Connect-DbaInstance -SqlInstance $script:instance1
-            $server2 = Connect-DbaInstance -SqlInstance $script:instance2
+            $server1 = Connect-Instance -SqlInstance $script:instance1
+            $server2 = Connect-Instance -SqlInstance $script:instance2
             $server1.Query($createsql)
         }
         catch {
@@ -49,14 +49,14 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 
     Context "Copy linked server with the same properties" {
         It "copies successfully" {
-            $result = Copy-DbaLinkedServer -Source $server1 -Destination $server2 -LinkedServer dbatools-localhost -WarningAction SilentlyContinue
+            $result = Copy-LinkedServer -Source $server1 -Destination $server2 -LinkedServer dbatools-localhost -WarningAction SilentlyContinue
             $result | Select-Object -ExpandProperty Name -Unique | Should Be "dbatools-localhost"
             $result | Select-Object -ExpandProperty Status -Unique | Should Be "Successful"
         }
 
         It "retains the same properties" {
-            $LinkedServer1 = Get-DbaLinkedServer -SqlInstance $server1 -LinkedServer dbatools-localhost -WarningAction SilentlyContinue
-            $LinkedServer2 = Get-DbaLinkedServer -SqlInstance $server2 -LinkedServer dbatools-localhost -WarningAction SilentlyContinue
+            $LinkedServer1 = Get-LinkedServer -SqlInstance $server1 -LinkedServer dbatools-localhost -WarningAction SilentlyContinue
+            $LinkedServer2 = Get-LinkedServer -SqlInstance $server2 -LinkedServer dbatools-localhost -WarningAction SilentlyContinue
 
             # Compare its value
             $LinkedServer1.Name | Should Be $LinkedServer2.Name
@@ -64,12 +64,12 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         }
 
         It "skips existing linked servers" {
-            $results = Copy-DbaLinkedServer -Source $server1 -Destination $server2 -LinkedServer dbatools-localhost -WarningAction SilentlyContinue
+            $results = Copy-LinkedServer -Source $server1 -Destination $server2 -LinkedServer dbatools-localhost -WarningAction SilentlyContinue
             $results.Status | Should Be "Skipped"
         }
 
         It "upgrades SQLNCLI provider based on what is registered" {
-            $result = Copy-DbaLinkedServer -Source $server1 -Destination $server2 -LinkedServer dbatools-localhost2 -UpgradeSqlClient
+            $result = Copy-LinkedServer -Source $server1 -Destination $server2 -LinkedServer dbatools-localhost2 -UpgradeSqlClient
             $server1.LinkedServers.Script() -match 'SQLNCLI10' | Should -Not -BeNullOrEmpty
             $server2.LinkedServers.Script() -match 'SQLNCLI11' | Should -Not -BeNullOrEmpty
         }

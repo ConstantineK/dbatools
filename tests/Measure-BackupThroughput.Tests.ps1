@@ -5,17 +5,17 @@
 Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
     Context "Returns output for single database" {
         BeforeAll {
-            $server = Connect-DbaInstance -SqlInstance $script:instance2
+            $server = Connect-Instance -SqlInstance $script:instance2
             $random = Get-Random
             $db = "dbatoolsci_measurethruput$random"
             $server.Query("CREATE DATABASE $db")
-            $null = Get-DbaDatabase -SqlInstance $server -Database $db | Backup-DbaDatabase
+            $null = Get-Database -SqlInstance $server -Database $db | Backup-Database
         }
         AfterAll {
-            $null = Get-DbaDatabase -SqlInstance $server -Database $db | Remove-DbaDatabase -Confirm:$false
+            $null = Get-Database -SqlInstance $server -Database $db | Remove-Database -Confirm:$false
         }
 
-        $results = Measure-DbaBackupThroughput -SqlInstance $server -Database $db
+        $results = Measure-BackupThroughput -SqlInstance $server -Database $db
         It "Should return just one backup" {
             $results.Database.Count -eq 1 | Should Be $true
         }

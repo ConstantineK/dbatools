@@ -81,21 +81,21 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 
                 -- display trace id for future references
                 select TraceID=@TraceID"
-        $server = Connect-DbaInstance -SqlInstance $script:instance1
+        $server = Connect-Instance -SqlInstance $script:instance1
         $traceid = ($server.Query($sql)).TraceID
-        $null = Get-DbaTrace -SqlInstance $script:instance1 -Id $traceid | Start-DbaTrace
+        $null = Get-Trace -SqlInstance $script:instance1 -Id $traceid | Start-Trace
     }
     AfterAll {
-        $null = Remove-DbaTrace -SqlInstance $script:instance1 -Id $traceid
+        $null = Remove-Trace -SqlInstance $script:instance1 -Id $traceid
         Remove-Item C:\windows\temp\temptrace.trc
     }
     Context "Test Stopping Trace" {
-        $results = Get-DbaTrace -SqlInstance $script:instance1 -Id $traceid
+        $results = Get-Trace -SqlInstance $script:instance1 -Id $traceid
         It "starts in a running state" {
             $results.Id | Should Be $traceid
             $results.IsRunning | Should Be $true
         }
-        $results = Get-DbaTrace -SqlInstance $script:instance1 -Id $traceid | Stop-DbaTrace
+        $results = Get-Trace -SqlInstance $script:instance1 -Id $traceid | Stop-Trace
         It "is now in a stopped state" {
             $results.Id | Should Be $traceid
             $results.IsRunning | Should Be $false

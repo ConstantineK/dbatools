@@ -1,5 +1,5 @@
 #ValidationTags#Messaging,FlowControl,Pipeline,CodeStyle#
-function Write-DbaDataTable {
+function Write-DataTable {
     <#
         .SYNOPSIS
             Writes data to a SQL Server Table.
@@ -93,67 +93,67 @@ function Write-DbaDataTable {
 
         .NOTES
             Tags: DataTable, Insert
-            
-            
+
+
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
-            https://dbatools.io/Write-DbaDataTable
+            https://dbatools.io/Write-DataTable
 
         .EXAMPLE
-            $DataTable = Import-Csv C:\temp\customers.csv | Out-DbaDataTable
-            Write-DbaDataTable -SqlInstance sql2014 -InputObject $DataTable -Table mydb.dbo.customers
+            $DataTable = Import-Csv C:\temp\customers.csv | Out-DataTable
+            Write-DataTable -SqlInstance sql2014 -InputObject $DataTable -Table mydb.dbo.customers
 
             Performs a bulk insert of all the data in customers.csv into database mydb, schema dbo, table customers. A progress bar will be shown as rows are inserted. If the destination table does not exist, the import will be halted.
 
         .EXAMPLE
-            $DataTable = Import-Csv C:\temp\customers.csv | Out-DbaDataTable
-            $DataTable | Write-DbaDataTable -SqlInstance sql2014 -Table mydb.dbo.customers
+            $DataTable = Import-Csv C:\temp\customers.csv | Out-DataTable
+            $DataTable | Write-DataTable -SqlInstance sql2014 -Table mydb.dbo.customers
 
             Performs a row by row insert of the data in customers.csv. This is significantly slower than a bulk insert and will not show a progress bar.
 
             This method is not recommended. Use -InputObject instead.
 
         .EXAMPLE
-            $DataTable = Import-Csv C:\temp\customers.csv | Out-DbaDataTable
-            Write-DbaDataTable -SqlInstance sql2014 -InputObject $DataTable -Table mydb.dbo.customers -AutoCreateTable
+            $DataTable = Import-Csv C:\temp\customers.csv | Out-DataTable
+            Write-DataTable -SqlInstance sql2014 -InputObject $DataTable -Table mydb.dbo.customers -AutoCreateTable
 
             Performs a bulk insert of all the data in customers.csv. If mydb.dbo.customers does not exist, it will be created with inefficient but forgiving DataTypes.
 
         .EXAMPLE
-            $DataTable = Import-Csv C:\temp\customers.csv | Out-DbaDataTable
-            Write-DbaDataTable -SqlInstance sql2014 -InputObject $DataTable -Table mydb.dbo.customers -Truncate
+            $DataTable = Import-Csv C:\temp\customers.csv | Out-DataTable
+            Write-DataTable -SqlInstance sql2014 -InputObject $DataTable -Table mydb.dbo.customers -Truncate
 
             Performs a bulk insert of all the data in customers.csv. Prior to importing into mydb.dbo.customers, the user is informed that the table will be truncated and asks for confirmation. The user is prompted again to perform the import.
 
         .EXAMPLE
-            $DataTable = Import-Csv C:\temp\customers.csv | Out-DbaDataTable
-            Write-DbaDataTable -SqlInstance sql2014 -InputObject $DataTable -Database mydb -Table customers -KeepNulls
+            $DataTable = Import-Csv C:\temp\customers.csv | Out-DataTable
+            Write-DataTable -SqlInstance sql2014 -InputObject $DataTable -Database mydb -Table customers -KeepNulls
 
             Performs a bulk insert of all the data in customers.csv into mydb.dbo.customers. Because Schema was not specified, dbo was used. NULL values in the destination table will be preserved.
 
         .EXAMPLE
             $passwd = ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force
             $AzureCredential = Mew-Object System.Management.Automation.PSCredential("AzureAccount"),$passwd)
-            $DataTable = Import-Csv C:\temp\customers.csv | Out-DbaDataTable
-            Write-DbaDataTable -SqlInstance AzureDB.database.windows.net -InputObject $DataTable -Database mydb -Table customers -KeepNulls -Credential $AzureCredential -RegularUser -BulkCopyTimeOut 300
+            $DataTable = Import-Csv C:\temp\customers.csv | Out-DataTable
+            Write-DataTable -SqlInstance AzureDB.database.windows.net -InputObject $DataTable -Database mydb -Table customers -KeepNulls -Credential $AzureCredential -RegularUser -BulkCopyTimeOut 300
 
             This performs the same operation as the previous example, but against a SQL Azure Database instance using the required credentials. The -RegularUser switch is needed to prevent trying to get administrative privilege, and we increase the BulkCopyTimeout value to cope with any latency.
 
         .EXAMPLE
-            $process = Get-Process | Out-DbaDataTable
-            Write-DbaDataTable -InputObject $process -SqlInstance sql2014 -Database mydb -Table myprocesses -AutoCreateTable
+            $process = Get-Process | Out-DataTable
+            Write-DataTable -InputObject $process -SqlInstance sql2014 -Database mydb -Table myprocesses -AutoCreateTable
 
             Creates a table based on the Process object with over 60 columns, converted from PowerShell data types to SQL Server data types. After the table is created a bulk insert is performed to add process information into the table.
 
-            This is an example of the type conversion in action. All process properties are converted, including special types like TimeSpan. Script properties are resolved before the type conversion starts thanks to Out-DbaDataTable.
+            This is an example of the type conversion in action. All process properties are converted, including special types like TimeSpan. Script properties are resolved before the type conversion starts thanks to Out-DataTable.
     #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "High")]
     param (
         [Parameter(Position = 0, Mandatory = $true)]
         [Alias("ServerInstance", "SqlServer")]
         [ValidateNotNull()]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [Parameter(Position = 1)]
         [ValidateNotNull()]
         [Alias("Credential")]
@@ -187,29 +187,29 @@ function Write-DbaDataTable {
         [switch][Alias('Silent')]$EnableException,
         [switch]$UseDynamicStringLength
     )
-    
+
     begin {
         # Null variable to make sure upper-scope variables don't interfere later
         $steppablePipeline = $null
-        
+
         #region Utility Functions
         function Invoke-BulkCopy {
         <#
             .SYNOPSIS
                 Copies a datatable in bulk over to a table.
-            
+
             .DESCRIPTION
                 Copies a datatable in bulk over to a table.
-            
+
             .PARAMETER DataTable
                 The datatable to copy.
-            
+
             .PARAMETER SqlInstance
                 Needs not be specified. The SqlInstance targeted. For message purposes only.
-            
+
             .PARAMETER Fqtn
                 Needs not be specified. The fqtn written to. For message purposes only.
-            
+
             .PARAMETER BulkCopy
                 Needs not be specified. The bulk copy object used to perform the copy operation.
         #>
@@ -221,12 +221,12 @@ function Write-DbaDataTable {
                 $BulkCopy = $bulkCopy
             )
             Write-Message -Level Verbose -Message "Importing in bulk to $fqtn"
-            
+
             $rowCount = $DataTable.Rows.Count
             if ($rowCount -eq 0) {
                 $rowCount = 1
             }
-            
+
             if ($Pscmdlet.ShouldProcess($SqlInstance, "Writing $rowCount rows to $Fqtn")) {
                 $bulkCopy.WriteToServer($DataTable)
                 if ($rowCount -is [int]) {
@@ -234,33 +234,33 @@ function Write-DbaDataTable {
                 }
             }
         }
-        
+
         function New-Table {
         <#
             .SYNOPSIS
                 Creates a table, based upon a DataTable.
-            
+
             .DESCRIPTION
                 Creates a table, based upon a DataTable.
-            
+
             .PARAMETER DataTable
                 The DataTable to base the table structure upon.
-            
+
             .PARAMETER PStoSQLTypes
                 Automatically inherits from parent.
-            
+
             .PARAMETER SqlInstance
                 Automatically inherits from parent.
-            
+
             .PARAMETER Fqtn
                 Automatically inherits from parent.
-            
+
             .PARAMETER Server
                 Automatically inherits from parent.
-            
+
             .PARAMETER DatabaseName
                 Automatically inherits from parent.
-            
+
             .PARAMETER EnableException
                 By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
                 This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
@@ -279,31 +279,31 @@ function Write-DbaDataTable {
                 $DatabaseName = $databaseName,
                 [switch]$EnableException
             )
-            
+
             Write-Message -Level Verbose -Message "Creating table for $fqtn"
-            
+
             # Get SQL datatypes by best guess on first data row
             $sqlDataTypes = @();
             $columns = $DataTable.Columns
-            
+
             if ($null -eq $columns) {
                 $columns = $DataTable.Table.Columns
             }
-            
+
             foreach ($column in $columns) {
                 $sqlColumnName = $column.ColumnName
-                
+
                 try {
                     $columnValue = $DataTable.Rows[0].$sqlColumnName
                 }
                 catch {
                     $columnValue = $DataTable.$sqlColumnName
                 }
-                
+
                 if ($null -eq $columnValue) {
                     $columnValue = $DataTable.$sqlColumnName
                 }
-                
+
             <#
                 PS to SQL type conversion
                 If data type exists in hash table, use the corresponding SQL type
@@ -319,14 +319,14 @@ function Write-DbaDataTable {
                 else {
                     $sqlDataType = "nvarchar(MAX)"
                 }
-                
+
                 $sqlDataTypes += "[$sqlColumnName] $sqlDataType"
             }
-            
+
             $sql = "BEGIN CREATE TABLE $fqtn ($($sqlDataTypes -join ' NULL,')) END"
-            
+
             Write-Message -Level Debug -Message $sql
-            
+
             if ($Pscmdlet.ShouldProcess($SqlInstance, "Creating table $Fqtn")) {
                 try {
                     $null = $Server.Databases[$DatabaseName].Query($sql)
@@ -337,15 +337,15 @@ function Write-DbaDataTable {
                 }
             }
         }
-        
+
         #endregion Utility Functions
-        
+
         #region Prepare type for bulk copy
         if (-not $Truncate) { $ConfirmPreference = "None" }
-        
+
         # Getting the total rows copied is a challenge. Use SqlBulkCopyExtension.
         # http://stackoverflow.com/questions/1188384/sqlbulkcopy-row-count-when-complete
-        
+
         $source = 'namespace System.Data.SqlClient {
             using Reflection;
 
@@ -361,52 +361,52 @@ function Write-DbaDataTable {
                 }
             }
         }'
-        
+
         Add-Type -ReferencedAssemblies 'System.Data.dll' -TypeDefinition $source -ErrorAction SilentlyContinue
         #endregion Prepare type for bulk copy
-        
+
         #region Resolve Full Qualified Table Name
         $dotCount = ([regex]::Matches($Table, "\.")).count
-        
+
         if ($dotCount -lt 2 -and $null -eq $Database) {
             Stop-Function -Message "You must specify a database or fully qualified table name."
             return
         }
-        
+
         if (Test-Bound -ParameterName Database) {
             $databaseName = "$Database"
         }
-        
+
         $tableName = $Table
         $schemaName = $Schema
-        
+
         if ($dotCount -eq 1) {
             $schemaName = $Table.Split(".")[0]
             $tableName = $Table.Split(".")[1]
         }
-        
+
         if ($dotCount -eq 2) {
             $databaseName = $Table.Split(".")[0]
             $schemaName = $Table.Split(".")[1]
             $tableName = $Table.Split(".")[2]
         }
-        
+
         if ($databaseName -match "\[.*\]") {
             $databaseName = ($databaseName -replace '\[', '') -replace '\]', ''
         }
-        
+
         if ($schemaName -match "\[.*\]") {
             $schemaName = ($schemaName -replace '\[', '') -replace '\]', ''
         }
-        
+
         if ($tableName -match "\[.*\]") {
             $tableName = ($tableName -replace '\[', '') -replace '\]', ''
         }
-        
+
         $fqtn = "[$databaseName].[$schemaName].[$tableName]"
         Write-Message -Level SomewhatVerbose -Message "FQTN processed: $fqtn"
         #endregion Resolve Full Qualified Table Name
-        
+
         #region Connect to server and get database
         Write-Message -Message "Attempting to connect to $SqlInstance." -Level Verbose -Target $SqlInstance
         try {
@@ -416,7 +416,7 @@ function Write-DbaDataTable {
             Stop-Function -Message "Failure" -Category ConnectionError -ErrorRecord $_ -Target $SqlInstance
             return
         }
-        
+
         if ($server.ServerType -eq 'SqlAzureDatabase') {
             <#
                 For some reasons SMO wants an initial pull when talking to Azure Sql DB
@@ -431,29 +431,29 @@ function Write-DbaDataTable {
         }
         $databaseObject = $server.Databases[$databaseName]
         #endregion Connect to server and get database
-        
+
         #region Prepare database and bulk operations
         if ($null -eq $databaseObject) {
             Stop-Function -Message "$databaseName does not exist." -Target $SqlInstance
             return
         }
-        
+
         $databaseObject.Tables.Refresh()
         if ($schemaName -notin $databaseObject.Schemas.Name) {
             Stop-Function -Message "Schema does not exist."
             return
         }
-        
+
         $tableExists = ($tableName -in $databaseObject.Tables.Name) -and ($databaseObject.Tables.Schema -eq $schemaName)
-        
+
         if ((-not $tableExists) -and (-not $AutoCreateTable)) {
             Stop-Function -Message "Table does not exist and automatic creation of the table has not been selected. Specify the '-AutoCreateTable'-parameter to generate a suitable table."
             return
         }
-        
+
         $bulkCopyOptions = 0
         $options = "TableLock", "CheckConstraints", "FireTriggers", "KeepIdentity", "KeepNulls", "Default"
-        
+
         foreach ($option in $options) {
             $optionValue = Get-Variable $option -ValueOnly -ErrorAction SilentlyContinue
             if ($option -eq "TableLock" -and (!$NoTableLock)) {
@@ -463,7 +463,7 @@ function Write-DbaDataTable {
                 $bulkCopyOptions += $([Data.SqlClient.SqlBulkCopyOptions]::$option).value__
             }
         }
-        
+
         if ($Truncate -eq $true) {
             if ($Pscmdlet.ShouldProcess($SqlInstance, "Truncating $fqtn")) {
                 try {
@@ -475,13 +475,13 @@ function Write-DbaDataTable {
                 }
             }
         }
-        
+
         $bulkCopy = New-Object Data.SqlClient.SqlBulkCopy("$($server.ConnectionContext.ConnectionString);Database=$databaseName", $bulkCopyOptions)
         $bulkCopy.DestinationTableName = $fqtn
         $bulkCopy.BatchSize = $BatchSize
         $bulkCopy.NotifyAfter = $NotifyAfter
         $bulkCopy.BulkCopyTimeOut = $BulkCopyTimeOut
-        
+
         $elapsed = [System.Diagnostics.Stopwatch]::StartNew()
         # Add RowCount output
         $bulkCopy.Add_SqlRowsCopied({
@@ -490,7 +490,7 @@ function Write-DbaDataTable {
                 $timeTaken = [math]::Round($elapsed.Elapsed.TotalSeconds, 1)
                 Write-Progress -id 1 -activity "Inserting $rowCount rows." -PercentComplete $percent -Status ([System.String]::Format("Progress: {0} rows ({1}%) in {2} seconds", $script:totalRows, $percent, $timeTaken))
             })
-        
+
         $PStoSQLTypes = @{
             #PS datatype      = SQL data type
             'System.Int32'     = 'int';
@@ -531,18 +531,18 @@ function Write-DbaDataTable {
             'int'              = 'int';
             'long'             = 'bigint';
         }
-        
+
         $validTypes = @([System.Data.DataSet], [System.Data.DataTable], [System.Data.DataRow], [System.Data.DataRow[]])
         #endregion Prepare database and bulk operations
-        
-        #region ConvertTo-DbaDataTable wrapper
+
+        #region ConvertTo-DataTable wrapper
         try {
-            $wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand('ConvertTo-DbaDataTable', [System.Management.Automation.CommandTypes]::Function)
+            $wrappedCmd = $ExecutionContext.InvokeCommand.GetCommand('ConvertTo-DataTable', [System.Management.Automation.CommandTypes]::Function)
             $splatCDDT = @{
-                TimeSpanType   = (Get-DbaConfigValue -FullName 'commands.write-dbadatatable.timespantype' -Fallback 'TotalMilliseconds')
-                SizeType       = (Get-DbaConfigValue -FullName 'commands.write-dbadatatable.sizetype' -Fallback 'Int64')
-                IgnoreNull     = (Get-DbaConfigValue -FullName 'commands.write-dbadatatable.ignorenull' -Fallback $false)
-                Raw            = (Get-DbaConfigValue -FullName 'commands.write-dbadatatable.raw' -Fallback $false)
+                TimeSpanType   = (Get-ConfigValue -FullName 'commands.write-dbadatatable.timespantype' -Fallback 'TotalMilliseconds')
+                SizeType       = (Get-ConfigValue -FullName 'commands.write-dbadatatable.sizetype' -Fallback 'Int64')
+                IgnoreNull     = (Get-ConfigValue -FullName 'commands.write-dbadatatable.ignorenull' -Fallback $false)
+                Raw            = (Get-ConfigValue -FullName 'commands.write-dbadatatable.raw' -Fallback $false)
             }
             $scriptCmd = { & $wrappedCmd @splatCDDT }
             $steppablePipeline = $scriptCmd.GetSteppablePipeline()
@@ -551,14 +551,14 @@ function Write-DbaDataTable {
         catch {
             Stop-Function -Message "Failed to initialize "
         }
-        #endregion ConvertTo-DbaDataTable wrapper
+        #endregion ConvertTo-DataTable wrapper
     }
     process {
         if (Test-FunctionInterrupt) { return }
-        
+
         if ($null -ne $InputObject) { $inputType = $InputObject.GetType() }
         else { $inputType = $null }
-        
+
         if ($inputType -eq [System.Data.DataSet]) {
             $inputData = $InputObject.Tables
             $inputType = [System.Data.DataTable[]]
@@ -566,7 +566,7 @@ function Write-DbaDataTable {
         else {
             $inputData = $InputObject
         }
-        
+
         #region Scenario 1: Single valid table
         if ($inputType -in $validTypes) {
             if (-not $tableExists) {
@@ -579,7 +579,7 @@ function Write-DbaDataTable {
                     return
                 }
             }
-            
+
             try { Invoke-BulkCopy -DataTable $InputObject }
             catch {
                 Stop-Function -Message "Failed to bulk import to $fqtn" -ErrorRecord $_ -Target $SqlInstance
@@ -587,7 +587,7 @@ function Write-DbaDataTable {
             return
         }
         #endregion Scenario 1: Single valid table
-        
+
         foreach ($object in $inputData) {
             #region Scenario 2: Multiple valid tables
             if ($object.GetType() -in $validTypes) {
@@ -601,7 +601,7 @@ function Write-DbaDataTable {
                         return
                     }
                 }
-                
+
                 try { Invoke-BulkCopy -DataTable $object }
                 catch {
                     Stop-Function -Message "Failed to bulk import to $fqtn" -ErrorRecord $_ -Target $SqlInstance -Continue
@@ -609,7 +609,7 @@ function Write-DbaDataTable {
                 continue
             }
             #endregion Scenario 2: Multiple valid tables
-            
+
             #region Scenario 3: Invalid data types
             else {
                 $null = $steppablePipeline.Process($object)
@@ -619,10 +619,10 @@ function Write-DbaDataTable {
         }
     }
     end {
-        #region ConvertTo-DbaDataTable wrapper
+        #region ConvertTo-DataTable wrapper
         if ($null -ne $steppablePipeline) {
             $dataTable = $steppablePipeline.End()
-            
+
             if (-not $tableExists) {
                 try {
                     New-Table -DataTable $dataTable[0] -EnableException
@@ -633,14 +633,14 @@ function Write-DbaDataTable {
                     return
                 }
             }
-            
+
             try { Invoke-BulkCopy -DataTable $dataTable[0] }
             catch {
                 Stop-Function -Message "Failed to bulk import to $fqtn" -ErrorRecord $_ -Target $SqlInstance
             }
         }
-        #endregion ConvertTo-DbaDataTable wrapper
-        
+        #endregion ConvertTo-DataTable wrapper
+
         if ($bulkCopy) {
             $bulkCopy.Close()
             $bulkCopy.Dispose()

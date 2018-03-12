@@ -5,7 +5,7 @@
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "command can run" {
         It "should be able to run - not much to test here" {
-            Test-DbaDbCompression -SqlInstance $script:instance2 -Database tempdb | Should Be $null
+            Test-DbCompression -SqlInstance $script:instance2 -Database tempdb | Should Be $null
         }
     }
 }

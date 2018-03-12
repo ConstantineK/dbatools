@@ -1,6 +1,6 @@
 #ValidationTags#Messaging,FlowControl,Pipeline,CodeStyle#
 
-function Test-DbaConnection {
+function Test-Connection {
     <#
         .SYNOPSIS
             Tests the connection to a single instance.
@@ -27,7 +27,7 @@ function Test-DbaConnection {
             Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
         .EXAMPLE
-            Test-DbaConnection SQL2016
+            Test-Connection SQL2016
 
             ComputerName         : SQL2016
             InstanceName         : MSSQLSERVER
@@ -54,8 +54,8 @@ function Test-DbaConnection {
             Tags: CIM, Test, Connection
             Author: Chrissy LeMaire
 
-            
-            
+
+
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
     #>
     [CmdletBinding()]
@@ -93,7 +93,7 @@ function Test-DbaConnection {
                         FQDN             :
                         FullComputerName :
                      #>
-                $resolved = Resolve-DbaNetworkName -ComputerName $instance.ComputerName -Credential $Credential
+                $resolved = Resolve-NetworkName -ComputerName $instance.ComputerName -Credential $Credential
             }
             catch {
                 Stop-Function -Message "Unable to resolve server information" -Category ConnectionError -Target $instance -ErrorRecord $_ -Continue
@@ -150,7 +150,7 @@ function Test-DbaConnection {
 
             # TCP Port
             try {
-                $tcpport = (Get-DbaTcpPort -SqlInstance $server -EnableException).Port
+                $tcpport = (Get-TcpPort -SqlInstance $server -EnableException).Port
             }
             catch {
                 $tcpport = $_
@@ -158,7 +158,7 @@ function Test-DbaConnection {
 
             # Auth Scheme
             try {
-                $authscheme = (Test-DbaConnectionAuthScheme -SqlInstance $server -WarningVariable authwarning -WarningAction SilentlyContinue).AuthScheme
+                $authscheme = (Test-ConnectionAuthScheme -SqlInstance $server -WarningVariable authwarning -WarningAction SilentlyContinue).AuthScheme
             }
             catch {
                 $authscheme = $_
@@ -193,6 +193,6 @@ function Test-DbaConnection {
         }
     }
     end {
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Test-SqlConnection
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Test-SqlConnection
     }
 }

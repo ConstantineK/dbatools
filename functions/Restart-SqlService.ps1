@@ -1,4 +1,4 @@
-function Restart-DbaSqlService {
+function Restart-SqlService {
     <#
     .SYNOPSIS
     Restarts SQL Server services on a computer.
@@ -25,7 +25,7 @@ function Restart-DbaSqlService {
     How long to wait for the start/stop request completion before moving on. Specify 0 to wait indefinitely.
 
     .PARAMETER ServiceCollection
-    A collection of services from Get-DbaSqlService
+    A collection of services from Get-SqlService
 
     .PARAMETER EnableException
     By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
@@ -44,35 +44,35 @@ function Restart-DbaSqlService {
     .NOTES
     Author: Kirill Kravtsov( @nvarscar )
 
-    dbatools PowerShell module (https://dbatools.io)
+    sqlshellPowerShell module (https://dbatools.io)
     Copyright (C) 2017 Chrissy LeMaire
     License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .LINK
-    https://dbatools.io/Restart-DbaSqlService
+    https://dbatools.io/Restart-SqlService
 
     .EXAMPLE
-    Restart-DbaSqlService -ComputerName sqlserver2014a
+    Restart-SqlService -ComputerName sqlserver2014a
 
     Restarts the SQL Server related services on computer sqlserver2014a.
 
     .EXAMPLE
-    'sql1','sql2','sql3'| Get-DbaSqlService | Restart-DbaSqlService
+    'sql1','sql2','sql3'| Get-SqlService | Restart-SqlService
 
     Gets the SQL Server related services on computers sql1, sql2 and sql3 and restarts them.
 
     .EXAMPLE
-    Restart-DbaSqlService -ComputerName sql1,sql2 -Instance MSSQLSERVER
+    Restart-SqlService -ComputerName sql1,sql2 -Instance MSSQLSERVER
 
     Restarts the SQL Server services related to the default instance MSSQLSERVER on computers sql1 and sql2.
 
     .EXAMPLE
-    Restart-DbaSqlService -ComputerName $MyServers -Type SSRS
+    Restart-SqlService -ComputerName $MyServers -Type SSRS
 
     Restarts the SQL Server related services of type "SSRS" (Reporting Services) on computers in the variable MyServers.
 
     .EXAMPLE
-    Restart-DbaSqlService -ComputerName sql1 -Type Engine -Force
+    Restart-SqlService -ComputerName sql1 -Type Engine -Force
 
     Restarts SQL Server database engine services on sql1 forcing dependent SQL Server Agent services to restart as well.
 #>
@@ -100,7 +100,7 @@ function Restart-DbaSqlService {
             if ($Type) { $serviceParams.Type = $Type }
             if ($Credential) { $serviceParams.Credential = $Credential }
             if ($EnableException) { $serviceParams.Silent = $EnableException }
-            $serviceCollection = Get-DbaSqlService @serviceParams
+            $serviceCollection = Get-SqlService @serviceParams
         }
     }
     process {
@@ -112,7 +112,7 @@ function Restart-DbaSqlService {
         foreach ($service in $processArray) {
             if ($Force -and $service.ServiceType -eq 'Engine' -and !($processArray | Where-Object { $_.ServiceType -eq 'Agent' -and $_.InstanceName -eq $service.InstanceName -and $_.ComputerName -eq $service.ComputerName })) {
                 Write-Message -Level Verbose -Message "Adding Agent service to the list for service $($service.ServiceName) on $($service.ComputerName), since -Force has been specified"
-                #Construct parameters to call Get-DbaSqlService
+                #Construct parameters to call Get-SqlService
                 $serviceParams = @{
                     ComputerName = $service.ComputerName
                     InstanceName = $service.InstanceName
@@ -120,7 +120,7 @@ function Restart-DbaSqlService {
                 }
                 if ($Credential) { $serviceParams.Credential = $Credential }
                 if ($EnableException) { $serviceParams.Silent = $EnableException }
-                $processArray += @(Get-DbaSqlService @serviceParams)
+                $processArray += @(Get-SqlService @serviceParams)
             }
         }
         if ($processArray) {

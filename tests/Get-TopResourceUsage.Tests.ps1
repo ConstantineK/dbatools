@@ -3,7 +3,7 @@
 . "$PSScriptRoot\constants.ps1"
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
-    $results = Get-DbaTopResourceUsage -SqlInstance $instances -Type Duration -Database master
+    $results = Get-TopResourceUsage -SqlInstance $instances -Type Duration -Database master
 
     Context "Command returns proper info" {
         It "returns results" {

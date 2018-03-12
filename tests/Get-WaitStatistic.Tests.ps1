@@ -4,7 +4,7 @@
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "Command returns proper info" {
-        $results = Get-DbaWaitStatistic -SqlInstance $script:instance2 -Threshold 100
+        $results = Get-WaitStatistic -SqlInstance $script:instance2 -Threshold 100
 
         It "returns results" {
             $results.Count -gt 0 | Should Be $true
@@ -18,7 +18,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     }
 
     Context "Command returns proper info when using parameter IncludeIgnorable" {
-        $results = Get-DbaWaitStatistic -SqlInstance $script:instance2 -Threshold 100 -IncludeIgnorable | Where-Object {
+        $results = Get-WaitStatistic -SqlInstance $script:instance2 -Threshold 100 -IncludeIgnorable | Where-Object {
                 $_.WaitType -eq 'SLEEP_MASTERDBREADY'
             }
 
@@ -39,7 +39,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 
     Context "Command stops when can't connect" {
         It "Should warn cannot connect to MadeUpServer" {
-            { Get-DbaWaitStatistic -SqlInstance MadeUpServer -EnableException } | Should Throw "Can't connect to MadeUpServer"
+            { Get-WaitStatistic -SqlInstance MadeUpServer -EnableException } | Should Throw "Can't connect to MadeUpServer"
         }
     }
 }

@@ -1,6 +1,6 @@
 #ValidationTags#Messaging,FlowControl,Pipeline,CodeStyle#
 
-function Read-DbaBackupHeader {
+function Read-BackupHeader {
     <#
         .SYNOPSIS
             Reads and displays detailed information about a SQL Server backup.
@@ -15,7 +15,7 @@ function Read-DbaBackupHeader {
             Allows you to login to servers using SQL Logins as opposed to Windows Auth/Integrated/Trusted. To use:
 
             $scred = Get-Credential, then pass $scred object to the -SqlCredential parameter.
-            
+
             To connect as a different Windows user, run PowerShell as that user.i
 
         .PARAMETER Path
@@ -36,53 +36,53 @@ function Read-DbaBackupHeader {
 
         .NOTES
             Tags: DisasterRecovery, Backup, Restore
-            dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-            Copyright (C) 2016 Chrissy LeMaire
+            sqlshellPowerShell module (https://dbatools.io, clemaire@gmail.com)
+
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
-            https://dbatools.io/Read-DbaBackupHeader
+            https://dbatools.io/Read-BackupHeader
 
         .EXAMPLE
-            Read-DbaBackupHeader -SqlInstance sql2016 -Path S:\backups\mydb\mydb.bak
+            Read-BackupHeader -SqlInstance sql2016 -Path S:\backups\mydb\mydb.bak
 
             Logs into sql2016 using Windows authentication and reads the local file on sql2016, S:\backups\mydb\mydb.bak.
 
             If you are running this command on a workstation and connecting remotely, remember that sql2016 cannot access files on your own workstation.
 
         .EXAMPLE
-            Read-DbaBackupHeader -SqlInstance sql2016 -Path \\nas\sql\backups\mydb\mydb.bak, \\nas\sql\backups\otherdb\otherdb.bak
+            Read-BackupHeader -SqlInstance sql2016 -Path \\nas\sql\backups\mydb\mydb.bak, \\nas\sql\backups\otherdb\otherdb.bak
 
             Logs into sql2016 and reads two backup files - mydb.bak and otherdb.bak. The SQL Server service account must have rights to read this file.
 
         .EXAMPLE
-            Read-DbaBackupHeader -SqlInstance . -Path C:\temp\myfile.bak -Simple
+            Read-BackupHeader -SqlInstance . -Path C:\temp\myfile.bak -Simple
 
             Logs into the local workstation (or computer) and shows simplified output about C:\temp\myfile.bak. The SQL Server service account must have rights to read this file.
 
         .EXAMPLE
-            $backupinfo = Read-DbaBackupHeader -SqlInstance . -Path C:\temp\myfile.bak
+            $backupinfo = Read-BackupHeader -SqlInstance . -Path C:\temp\myfile.bak
             $backupinfo.FileList
 
             Displays detailed information about each of the datafiles contained in the backupset.
 
         .EXAMPLE
-            Read-DbaBackupHeader -SqlInstance . -Path C:\temp\myfile.bak -FileList
+            Read-BackupHeader -SqlInstance . -Path C:\temp\myfile.bak -FileList
 
             Also returns detailed information about each of the datafiles contained in the backupset.
 
         .EXAMPLE
-            "C:\temp\myfile.bak", "\backupserver\backups\myotherfile.bak" | Read-DbaBackupHeader -SqlInstance sql2016
+            "C:\temp\myfile.bak", "\backupserver\backups\myotherfile.bak" | Read-BackupHeader -SqlInstance sql2016
 
-            Similar to running Read-DbaBackupHeader -SqlInstance sql2016 -Path "C:\temp\myfile.bak", "\backupserver\backups\myotherfile.bak"
+            Similar to running Read-BackupHeader -SqlInstance sql2016 -Path "C:\temp\myfile.bak", "\backupserver\backups\myotherfile.bak"
 
         .EXAMPLE
-            Get-ChildItem \\nas\sql\*.bak | Read-DbaBackupHeader -SqlInstance sql2016
+            Get-ChildItem \\nas\sql\*.bak | Read-BackupHeader -SqlInstance sql2016
 
             Gets a list of all .bak files on the \\nas\sql share and reads the headers using the server named "sql2016". This means that the server, sql2016, must have read access to the \\nas\sql share.
 
         .EXAMPLE
-            Read-DbaBackupHeader -Path https://dbatoolsaz.blob.core.windows.net/azbackups/restoretime/restoretime_201705131850.bak
+            Read-BackupHeader -Path https://dbatoolsaz.blob.core.windows.net/azbackups/restoretime/restoretime_201705131850.bak
             -AzureCredential AzureBackupUser
 
             Gets the backup header information from the SQL Server backup file stored at https://dbatoolsaz.blob.core.windows.net/azbackups/restoretime/restoretime_201705131850.bak on Azure
@@ -135,7 +135,7 @@ function Read-DbaBackupHeader {
             }
             $device = New-Object Microsoft.SqlServer.Management.Smo.BackupDeviceItem $file, $deviceType
             $restore.Devices.Add($device)
-            if ((Test-DbaSqlPath -SqlInstance $server -Path $file) -or $deviceType -eq 'URL') {
+            if ((Test-SqlPath -SqlInstance $server -Path $file) -or $deviceType -eq 'URL') {
                 try {
                     $dataTable = $restore.ReadBackupHeader($server)
                 }
@@ -184,7 +184,7 @@ function Read-DbaBackupHeader {
                     }
                     catch {
                         $shortName = Split-Path $file -Leaf
-                        if (!(Test-DbaSqlPath -SqlInstance $server -Path $file)) {
+                        if (!(Test-SqlPath -SqlInstance $server -Path $file)) {
                             Stop-Function -Message "File $shortName does not exist or you do not have permission to access it. The SQL Server service account may not have access to the source directory." -Target $file -ErrorRecord $_ -Exception $_.Exception.InnerException.InnerException -Continue
                         }
                         else {

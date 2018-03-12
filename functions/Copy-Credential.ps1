@@ -81,13 +81,13 @@ function Copy-Credential {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
         [parameter(Mandatory = $true)]
-        [DbaInstanceParameter]$Source,
+        $Source,
         [PSCredential]
         $SourceSqlCredential,
         [PSCredential]
         $Credential,
         [parameter(Mandatory = $true)]
-        [DbaInstanceParameter]$Destination,
+        $Destination,
         [PSCredential]
         $DestinationSqlCredential,
         [object[]]$CredentialIdentity,
@@ -113,7 +113,7 @@ function Copy-Credential {
             #>
             [CmdletBinding(DefaultParameterSetName = "Default", SupportsShouldProcess = $true)]
             param (
-                [DbaInstanceParameter]$SqlInstance,
+                $SqlInstance,
                 [PSCredential]$SqlCredential
             )
 

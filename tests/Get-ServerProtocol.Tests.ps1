@@ -5,7 +5,7 @@
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 
     Context "Command actually works" {
-        $results = Get-DbaServerProtocol -ComputerName $script:instance1, $script:instance2
+        $results = Get-ServerProtocol -ComputerName $script:instance1, $script:instance2
 
         It "shows some services" {
             $results.DisplayName | Should Not Be $null

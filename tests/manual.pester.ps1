@@ -1,12 +1,12 @@
 <#
     .SYNOPSIS
-        Runs dbatools tests.
+        Runs sqlshelltests.
 
     .DESCRIPTION
         This is an helper to automate running tests locally
 
     .PARAMETER Path
-        The Path to the test files to run. It accepts multiple test file paths passed in (e.g. .\Find-DbaOrphanedFile.Tests.ps1) as well
+        The Path to the test files to run. It accepts multiple test file paths passed in (e.g. .\Find-OrphanedFile.Tests.ps1) as well
         as simple strings (e.g. "orphaned" will run all files matching .\*orphaned*.Tests.ps1)
 
     .PARAMETER Show
@@ -27,17 +27,17 @@
 
 
     .EXAMPLE
-        .\manual.pester.ps1 -Path Find-DbaOrphanedFile.Tests.ps1 -TestIntegration -Coverage -DependencyCovearge -ScriptAnalyzer
+        .\manual.pester.ps1 -Path Find-OrphanedFile.Tests.ps1 -TestIntegration -Coverage -DependencyCovearge -ScriptAnalyzer
 
         The most complete number of checks:
           - Runs both unittests and integrationtests
-          - Gathers and shows code coverage measurement for Find-DbaOrphanedFile and all its dependencies
-          - Checks Find-DbaOrphanedFile with Invoke-ScriptAnalyzer
+          - Gathers and shows code coverage measurement for Find-OrphanedFile and all its dependencies
+          - Checks Find-OrphanedFile with Invoke-ScriptAnalyzer
 
     .EXAMPLE
-        .\manual.pester.ps1 -Path Find-DbaOrphanedFile.Tests.ps1
+        .\manual.pester.ps1 -Path Find-OrphanedFile.Tests.ps1
 
-        Runs unittests stored in Find-DbaOrphanedFile.Tests.ps1
+        Runs unittests stored in Find-OrphanedFile.Tests.ps1
 
     .EXAMPLE
         .\manual.pester.ps1 -Path orphan
@@ -45,24 +45,24 @@
         Runs unittests for all tests matching in `*orphan*.Tests.ps1
 
     .EXAMPLE
-        .\manual.pester.ps1 -Path Find-DbaOrphanedFile.Tests.ps1 -Show Default
+        .\manual.pester.ps1 -Path Find-OrphanedFile.Tests.ps1 -Show Default
 
-        Runs unittests stored in Find-DbaOrphanedFile.Tests.ps1, with reduced verbosity
-
-    .EXAMPLE
-        .\manual.pester.ps1 -Path Find-DbaOrphanedFile.Tests.ps1 -TestIntegration
-
-        Runs both unittests and integrationtests stored in Find-DbaOrphanedFile.Tests.ps1
+        Runs unittests stored in Find-OrphanedFile.Tests.ps1, with reduced verbosity
 
     .EXAMPLE
-        .\manual.pester.ps1 -Path Find-DbaOrphanedFile.Tests.ps1 -TestIntegration -Coverage
+        .\manual.pester.ps1 -Path Find-OrphanedFile.Tests.ps1 -TestIntegration
 
-        Gathers and shows code coverage measurement for Find-DbaOrphanedFile
+        Runs both unittests and integrationtests stored in Find-OrphanedFile.Tests.ps1
 
     .EXAMPLE
-        .\manual.pester.ps1 -Path Find-DbaOrphanedFile.Tests.ps1 -TestIntegration -Coverage -DependencyCovearge
+        .\manual.pester.ps1 -Path Find-OrphanedFile.Tests.ps1 -TestIntegration -Coverage
 
-        Gathers and shows code coverage measurement for Find-DbaOrphanedFile and all its dependencies
+        Gathers and shows code coverage measurement for Find-OrphanedFile
+
+    .EXAMPLE
+        .\manual.pester.ps1 -Path Find-OrphanedFile.Tests.ps1 -TestIntegration -Coverage -DependencyCovearge
+
+        Gathers and shows code coverage measurement for Find-OrphanedFile and all its dependencies
 
 #>
 
@@ -112,7 +112,7 @@ $ModuleBase = Split-Path -Path $PSScriptRoot -Parent
 $global:dbatools_dotsourcemodule = $true
 
 #removes previously imported dbatools, if any
-Remove-Module dbatools -ErrorAction Ignore
+Remove-Module sqlshell-ErrorAction Ignore
 #imports the module making sure DLL is loaded ok
 Import-Module "$ModuleBase\dbatools.psd1" -DisableNameChecking
 #imports the psm1 to be able to use internal functions in tests
@@ -135,8 +135,8 @@ function Get-CoverageIndications($Path, $ModuleBase) {
     $everyfunction = $everything.Name
     $funcs = @()
     $leaf = Split-Path $path -Leaf
-    # assuming Get-DbaFoo.Tests.ps1 wants coverage for "Get-DbaFoo"
-    # but allowing also Get-DbaFoo.one.Tests.ps1 and Get-DbaFoo.two.Tests.ps1
+    # assuming Get-Foo.Tests.ps1 wants coverage for "Get-Foo"
+    # but allowing also Get-Foo.one.Tests.ps1 and Get-Foo.two.Tests.ps1
     $func_name += ($leaf -replace '^([^.]+)(.+)?.Tests.ps1', '$1')
     if ($func_name -in $everyfunction) {
         $funcs += $func_name
@@ -157,7 +157,7 @@ function Get-CoverageIndications($Path, $ModuleBase) {
     foreach ($f in $funcs) {
         # exclude always used functions ?!
         if ($f -in ('Connect-SqlInstance', 'Select-DefaultView', 'Stop-Function', 'Write-Message')) { continue }
-        # can I find a correspondence to a physical file (again, on the convenience of having Get-DbaFoo.ps1 actually defining Get-DbaFoo)?
+        # can I find a correspondence to a physical file (again, on the convenience of having Get-Foo.ps1 actually defining Get-Foo)?
         $res = $allfiles | Where-Object { $_.Name.Replace('.ps1', '') -eq $f }
         if ($res.count -gt 0) {
             $testpaths += $res.FullName

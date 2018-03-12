@@ -1,4 +1,4 @@
-function Stop-DbaProcess {
+function Stop-Process {
     <#
         .SYNOPSIS
             This command finds and kills SQL Server processes.
@@ -43,7 +43,7 @@ function Stop-DbaProcess {
             Exclude is the last filter to run, so even if a spid matches (for example) Hosts, if it's listed in Exclude it wil be excluded.
 
         .PARAMETER ProcessCollection
-            This is the process object passed by Get-DbaProcess if using a pipeline.
+            This is the process object passed by Get-Process if using a pipeline.
 
         .PARAMETER WhatIf
             If this switch is enabled, no actions are performed but informational messages will be displayed that explain what would happen if the command were to run.
@@ -58,40 +58,40 @@ function Stop-DbaProcess {
 
         .NOTES
             Tags: Processes
-            
-            
+
+
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
-            https://dbatools.io/Stop-DbaProcess
+            https://dbatools.io/Stop-Process
 
         .EXAMPLE
-            Stop-DbaProcess -SqlInstance sqlserver2014a -Login base\ctrlb, sa
+            Stop-Process -SqlInstance sqlserver2014a -Login base\ctrlb, sa
 
             Finds all processes for base\ctrlb and sa on sqlserver2014a, then kills them. Uses Windows Authentication to login to sqlserver2014a.
 
         .EXAMPLE
-            Stop-DbaProcess -SqlInstance sqlserver2014a -SqlCredential $credential -Spids 56, 77
+            Stop-Process -SqlInstance sqlserver2014a -SqlCredential $credential -Spids 56, 77
 
             Finds processes for spid 56 and 57, then kills them. Uses alternative (SQL or Windows) credentials to login to sqlserver2014a.
 
         .EXAMPLE
-            Stop-DbaProcess -SqlInstance sqlserver2014a -Programs 'Microsoft SQL Server Management Studio'
+            Stop-Process -SqlInstance sqlserver2014a -Programs 'Microsoft SQL Server Management Studio'
 
             Finds processes that were created in Microsoft SQL Server Management Studio, then kills them.
 
         .EXAMPLE
-            Stop-DbaProcess -SqlInstance sqlserver2014a -Hosts workstationx, server100
+            Stop-Process -SqlInstance sqlserver2014a -Hosts workstationx, server100
 
             Finds processes that were initiated by hosts (computers/clients) workstationx and server 1000, then kills them.
 
         .EXAMPLE
-            Stop-DbaProcess -SqlInstance sqlserver2014  -Database tempdb -WhatIf
+            Stop-Process -SqlInstance sqlserver2014  -Database tempdb -WhatIf
 
             Shows what would happen if the command were executed.
 
         .EXAMPLE
-            Get-DbaProcess -SqlInstance sql2016 -Programs 'dbatools PowerShell module - dbatools.io' | Stop-DbaProcess
+            Get-Process -SqlInstance sql2016 -Programs 'sqlshellPowerShell module - dbatools.io' | Stop-Process
 
             Finds processes that were created with dbatools, then kills them.
 
@@ -100,7 +100,7 @@ function Stop-DbaProcess {
     Param (
         [parameter(Mandatory, ParameterSetName = "Server")]
         [Alias("ServerInstance", "SqlServer")]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [Alias("Credential")]
         [PSCredential]$SqlCredential,
         [int[]]$Spid,
@@ -118,7 +118,7 @@ function Stop-DbaProcess {
         if (Test-FunctionInterrupt) { return }
 
         if (!$ProcessCollection) {
-            $ProcessCollection = Get-DbaProcess @PSBoundParameters
+            $ProcessCollection = Get-Process @PSBoundParameters
         }
 
         foreach ($session in $ProcessCollection) {

@@ -1,4 +1,4 @@
-function Repair-DbaOrphanUser {
+function Repair-OrphanUser {
     <#
         .SYNOPSIS
             Finds orphan users with existing login and remaps them.
@@ -47,44 +47,44 @@ function Repair-DbaOrphanUser {
             Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
         .EXAMPLE
-            Repair-DbaOrphanUser -SqlInstance sql2005
+            Repair-OrphanUser -SqlInstance sql2005
 
             Finds and repairs all orphan users of all databases present on server 'sql2005'
 
         .EXAMPLE
-            Repair-DbaOrphanUser -SqlInstance sqlserver2014a -SqlCredential $cred
+            Repair-OrphanUser -SqlInstance sqlserver2014a -SqlCredential $cred
 
             Finds and repair all orphan users in all databases present on server 'sqlserver2014a'. SQL credentials are used to authenticate to the server.
 
         .EXAMPLE
-            Repair-DbaOrphanUser -SqlInstance sqlserver2014a -Database db1, db2
+            Repair-OrphanUser -SqlInstance sqlserver2014a -Database db1, db2
 
             Finds and repairs all orphan users in both db1 and db2 databases.
 
         .EXAMPLE
-            Repair-DbaOrphanUser -SqlInstance sqlserver2014a -Database db1 -Users OrphanUser
+            Repair-OrphanUser -SqlInstance sqlserver2014a -Database db1 -Users OrphanUser
 
             Finds and repairs user 'OrphanUser' in 'db1' database.
 
         .EXAMPLE
-            Repair-DbaOrphanUser -SqlInstance sqlserver2014a -Users OrphanUser
+            Repair-OrphanUser -SqlInstance sqlserver2014a -Users OrphanUser
 
             Finds and repairs user 'OrphanUser' on all databases
 
         .EXAMPLE
-            Repair-DbaOrphanUser -SqlInstance sqlserver2014a -RemoveNotExisting
+            Repair-OrphanUser -SqlInstance sqlserver2014a -RemoveNotExisting
 
             Finds all orphan users of all databases present on server 'sqlserver2014a'. Removes all users that do not have  matching Logins.
 
         .NOTES
             Tags: Orphan
             Author: Claudio Silva (@ClaudioESSilva)
-            
-            
+
+
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
-            https://dbatools.io/Repair-DbaOrphanUser
+            https://dbatools.io/Repair-OrphanUser
     #>
     [CmdletBinding(SupportsShouldProcess = $true)]
     Param (
@@ -205,9 +205,9 @@ function Repair-DbaOrphanUser {
 
                             #With the collection complete invoke remove.
                             if ($RemoveNotExisting -eq $true) {
-                                if ($Pscmdlet.ShouldProcess($db.Name, "Remove-DbaOrphanUser")) {
-                                    Write-Message -Level Verbose -Message "Calling 'Remove-DbaOrphanUser'."
-                                    Remove-DbaOrphanUser -SqlInstance $sqlinstance -SqlCredential $SqlCredential -Database $db.Name -User $UsersToRemove
+                                if ($Pscmdlet.ShouldProcess($db.Name, "Remove-OrphanUser")) {
+                                    Write-Message -Level Verbose -Message "Calling 'Remove-OrphanUser'."
+                                    Remove-OrphanUser -SqlInstance $sqlinstance -SqlCredential $SqlCredential -Database $db.Name -User $UsersToRemove
                                 }
                             }
                         }
@@ -232,6 +232,6 @@ function Repair-DbaOrphanUser {
         $start.Stop()
         Write-Message -Level Verbose -Message "Total Elapsed time: $totaltime."
 
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Repair-SqlOrphanUser
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Repair-SqlOrphanUser
     }
 }

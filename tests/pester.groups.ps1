@@ -7,15 +7,15 @@ $TestsRunGroups = @{
     "2016"              = 'autodetect_$script:instance2'
     #run on scenario 2016_service - SQL Server service tests that might disrupt other tests
     "2016_service"      = @(
-        'Start-DbaSqlService',
-        'Stop-DbaSqlService',
-        'Restart-DbaSqlService',
-        'Get-DbaSqlService',
-        'Update-DbaSqlServiceAccount'
+        'Start-SqlService',
+        'Stop-SqlService',
+        'Restart-SqlService',
+        'Get-SqlService',
+        'Update-SqlServiceAccount'
     )
     # do not run on appveyor
     "appveyor_disabled" = @(
-        'Dismount-DbaDatabase'
+        'Dismount-Database'
     )
 
     # do not run everywhere

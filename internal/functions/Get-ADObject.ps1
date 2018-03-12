@@ -1,8 +1,8 @@
 #ValidationTags#FlowControl,Pipeline#
-function Get-DbaADObject {
+function Get-ADObject {
     <#
     .SYNOPSIS
-    Get-DbaADObject tries to facilitate searching AD with dbatools, which ATM can't require AD cmdlets.
+    Get-ADObject tries to facilitate searching AD with dbatools, which ATM can't require AD cmdlets.
 
     .DESCRIPTION
     As working with multiple domains, forests, ldap filters, partitions, etc is quite hard to grasp, let's try to do "the right thing" here and
@@ -38,43 +38,43 @@ function Get-DbaADObject {
     .NOTES
     Author: Niphlod, https://github.com/niphlod
     Tags:
-    dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-    Copyright (C) 2016 Chrissy LeMaire
+    sqlshellPowerShell module (https://dbatools.io, clemaire@gmail.com)
+
     License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .EXAMPLE
-    Get-DbaADObject -ADObject "contoso\ctrlb" -Type User
+    Get-ADObject -ADObject "contoso\ctrlb" -Type User
 
     Searches in the contoso domain for a ctrlb user
 
     .EXAMPLE
-    Get-DbaADObject -ADObject "ctrlb@contoso.com" -Type User -IdentityType UserPrincipalName
+    Get-ADObject -ADObject "ctrlb@contoso.com" -Type User -IdentityType UserPrincipalName
 
     Searches in the contoso domain for a ctrlb user using the UserPrincipalName format. Again, beware of the UPN suffixes in elaborate AD structures!
 
     .EXAMPLE
-    Get-DbaADObject -ADObject "contoso\ctrlb@super.contoso.com" -Type User -IdentityType UserPrincipalName
+    Get-ADObject -ADObject "contoso\ctrlb@super.contoso.com" -Type User -IdentityType UserPrincipalName
 
     Searches in the contoso domain for a ctrlb@super.contoso.com user using the UserPrincipalName format. This kind of search is better than the previous one
     because it takes into account possible UPN suffixes
 
     .EXAMPLE
-    Get-DbaADObject -ADObject "ctrlb@super.contoso.com" -Type User -IdentityType UserPrincipalName -SearchAllDomains
+    Get-ADObject -ADObject "ctrlb@super.contoso.com" -Type User -IdentityType UserPrincipalName -SearchAllDomains
 
     As a last resort, searches in all the current forest for a ctrlb@super.contoso.com user using the UserPrincipalName format
 
     .EXAMPLE
-    Get-DbaADObject -ADObject "contoso\sqlcollaborative" -Type Group
+    Get-ADObject -ADObject "contoso\sqlcollaborative" -Type Group
 
     Searches in the contoso domain for a sqlcollaborative group
 
     .EXAMPLE
-    Get-DbaADObject -ADObject "contoso\SqlInstance2014$" -Type Group
+    Get-ADObject -ADObject "contoso\SqlInstance2014$" -Type Group
 
     Searches in the contoso domain for a SqlInstance2014 computer (remember the ending $ for computer objects)
 
     .EXAMPLE
-    Get-DbaADObject -ADObject "contoso\ctrlb" -Type User -EnableException
+    Get-ADObject -ADObject "contoso\ctrlb" -Type User -EnableException
 
     Searches in the contoso domain for a ctrlb user, suppressing all error messages and throw exceptions that can be caught instead
 
@@ -115,7 +115,7 @@ function Get-DbaADObject {
             }
         }
 
-        function Get-DbaADObjectInternal($Domain, $IdentityType, $obj, $EnableException) {
+        function Get-ADObjectInternal($Domain, $IdentityType, $obj, $EnableException) {
             try {
                 # can we simply resolve the passed domain ? This has the benefit of raising almost instantly if the domain is not valid
                 $Context = New-Object System.DirectoryServices.ActiveDirectory.DirectoryContext('Domain', $Domain)
@@ -163,7 +163,7 @@ function Get-DbaADObject {
                 Write-Message -Message "Searching for $obj under all domains in $IdentityType format" -Level 4 -EnableException $EnableException
                 # if we're lucky, we can resolve the domain right away
                 try {
-                    Get-DbaADObjectInternal -Domain $Domain -IdentityType $IdentityType -obj $obj -EnableException $true
+                    Get-ADObjectInternal -Domain $Domain -IdentityType $IdentityType -obj $obj -EnableException $true
                 }
                 catch {
                     # if not, let's build up all domains
@@ -171,7 +171,7 @@ function Get-DbaADObject {
                     $AllDomains = $ForestObject.Domains.Name
                     foreach ($ForestDomain in $AllDomains) {
                         Write-Message -Message "Searching for $obj under domain $ForestDomain in $IdentityType format" -Level 4 -EnableException $EnableException
-                        $found = Get-DbaADObjectInternal -Domain $ForestDomain -IdentityType $IdentityType -obj $obj
+                        $found = Get-ADObjectInternal -Domain $ForestDomain -IdentityType $IdentityType -obj $obj
                         if ($found) {
                             $found
                             break
@@ -181,7 +181,7 @@ function Get-DbaADObject {
                     $AllTrusted = ($ForestObject.GetAllTrustRelationships().TopLevelNames | Where-Object Status -eq 'Enabled').Name
                     foreach ($ForestDomain in $AllTrusted) {
                         Write-Message -Message "Searching for $obj under domain $ForestDomain in $IdentityType format" -Level 4 -EnableException $EnableException
-                        $found = Get-DbaADObjectInternal -Domain $ForestDomain -IdentityType $IdentityType -obj $obj
+                        $found = Get-ADObjectInternal -Domain $ForestDomain -IdentityType $IdentityType -obj $obj
                         if ($found) {
                             $found
                             break
@@ -191,7 +191,7 @@ function Get-DbaADObject {
             }
             else {
                 Write-Message -Message "Searching for $obj under domain $domain in $IdentityType format" -Level 4 -EnableException $EnableException
-                Get-DbaADObjectInternal -Domain $Domain -IdentityType $IdentityType -obj $obj
+                Get-ADObjectInternal -Domain $Domain -IdentityType $IdentityType -obj $obj
             }
         }
     }

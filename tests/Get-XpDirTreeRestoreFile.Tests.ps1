@@ -4,9 +4,9 @@ $CommandName = $MyInvocation.MyCommand.Name.Replace(".Tests.ps1", "")
 . "$PSScriptRoot\..\internal\functions\Connect-SqlInstance.ps1"
 
 Describe "$commandname Unit Tests" -Tag 'UnitTests' {
-    InModuleScope dbatools {
+    InModuleScope sqlshell{
         #mock Connect-SqlInstance { $true }
-        mock Test-DbaSqlPath { $true }
+        mock Test-SqlPath { $true }
 
         Context "Test Connection and User Rights" {
             It "Should throw on an invalid SQL Connection" {
@@ -15,8 +15,8 @@ Describe "$commandname Unit Tests" -Tag 'UnitTests' {
                 { Get-XpDirTreeRestoreFile -path c:\dummy -SqlInstance bad\bad -EnableException $true } | Should Throw
             }
             It "Should throw if SQL Server can't see the path" {
-                Mock Test-DbaSqlPath { $false }
-                Mock Connect-SqlInstance { [DbaInstanceParameter]"bad\bad" }
+                Mock Test-SqlPath { $false }
+                Mock Connect-SqlInstance { "bad\bad" }
                 { Get-XpDirTreeRestoreFile -path c:\dummy -SqlInstance bad\bad -EnableException $true } | Should Throw
             }
         }

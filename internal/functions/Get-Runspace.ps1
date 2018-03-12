@@ -1,4 +1,4 @@
-function Get-DbaRunspace {
+function Get-Runspace {
     <#
     .SYNOPSIS
         Returns registered runspaces.
@@ -11,12 +11,12 @@ function Get-DbaRunspace {
         Only registered runspaces of similar names are returned.
 
     .EXAMPLE
-        PS C:\> Get-DbaRunspace
+        PS C:\> Get-Runspace
 
         Returns all registered runspaces
 
     .EXAMPLE
-        PS C:\> Get-DbaRunspace -Name 'mymodule.maintenance'
+        PS C:\> Get-Runspace -Name 'mymodule.maintenance'
 
         Returns the runspace registered under the name 'mymodule.maintenance'
 #>

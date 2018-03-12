@@ -81,10 +81,10 @@ function Copy-DatabaseAssembly {
     [CmdletBinding(DefaultParameterSetName = "Default", SupportsShouldProcess = $true)]
     param (
         [parameter(Mandatory = $true)]
-        [DbaInstanceParameter]$Source,
+        $Source,
         [PSCredential]$SourceSqlCredential,
         [parameter(Mandatory = $true)]
-        [DbaInstanceParameter]$Destination,
+        $Destination,
         [PSCredential]$DestinationSqlCredential,
         [object[]]$Assembly,
         [object[]]$ExcludeAssembly,

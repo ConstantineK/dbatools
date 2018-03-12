@@ -5,7 +5,7 @@
 Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
     Context "Setup" {
         BeforeAll {
-            $server = Connect-DbaInstance $script:instance1
+            $server = Connect-Instance $script:instance1
             $regStore = New-Object Microsoft.SqlServer.Management.RegisteredServers.RegisteredServersStore($server.ConnectionContext.SqlConnectionObject)
             $dbStore = $regStore.DatabaseEngineServerGroup
 
@@ -47,11 +47,11 @@ Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
         }
 
         It "Should return one group" {
-            $results = Get-DbaRegisteredServerGroup -SqlInstance $script:instance1 -Group $group
+            $results = Get-RegisteredServerGroup -SqlInstance $script:instance1 -Group $group
             $results.Count | Should Be 1
         }
         It "Should allow searching subgroups" {
-            $results = Get-DbaRegisteredServerGroup -SqlInstance $script:instance1 -Group "$group\$group2"
+            $results = Get-RegisteredServerGroup -SqlInstance $script:instance1 -Group "$group\$group2"
             $results.Count | Should Be 1
         }
 

@@ -5,20 +5,20 @@
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "Can get a certificate" {
         BeforeAll {
-            $null = Add-DbaComputerCertificate -Path $script:appveyorlabrepo\certificates\localhost.crt -Confirm:$false
+            $null = Add-ComputerCertificate -Path $script:appveyorlabrepo\certificates\localhost.crt -Confirm:$false
             $thumbprint = "29C469578D6C6211076A09CEE5C5797EEA0C2713"
         }
         AfterAll {
-            Remove-DbaComputerCertificate -Thumbprint $thumbprint -Confirm:$false
+            Remove-ComputerCertificate -Thumbprint $thumbprint -Confirm:$false
         }
 
-        $cert = Get-DbaComputerCertificate -Thumbprint $thumbprint
+        $cert = Get-ComputerCertificate -Thumbprint $thumbprint
 
         It "returns a single certificate with a specific thumbprint" {
             $cert.Thumbprint | Should Be $thumbprint
         }
 
-        $cert = Get-DbaComputerCertificate
+        $cert = Get-ComputerCertificate
 
         It "returns all certificates and at least one has the specified thumbprint" {
             "$($cert.Thumbprint)" -match $thumbprint | Should Be $true

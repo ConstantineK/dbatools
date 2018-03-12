@@ -1,6 +1,6 @@
 #ValidationTags#Messaging,FlowControl,Pipeline,CodeStyle#
 
-function Set-DbaStartupParameter {
+function Set-StartupParameter {
     <#
 .SYNOPSIS
 Sets the Startup Parameters for a SQL Server instance
@@ -110,57 +110,57 @@ Using this switch turns this "nice by default" feature off and enables you to ca
 .NOTES
 Author: Stuart Moore (@napalmgram), stuart-moore.com
 Tags:
-dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-Copyright (C) 2016 Chrissy LeMaire
+sqlshellPowerShell module (https://dbatools.io, clemaire@gmail.com)
+
 License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
 .EXAMPLE
-Set-DbaStartupParameter -SqlInstance server1\instance1 -SingleUser
+Set-StartupParameter -SqlInstance server1\instance1 -SingleUser
 
 Will configure the SQL Instance server1\instance1 to startup up in Single User mode at next startup
 
 .EXAMPLE
-Set-DbaStartupParameter -SqlInstance sql2016 -IncreasedExtents
+Set-StartupParameter -SqlInstance sql2016 -IncreasedExtents
 
 Will configure the SQL Instance sql2016 to IncreasedExtents = True (-E)
 
 .EXAMPLE
-Set-DbaStartupParameter -SqlInstance sql2016  -IncreasedExtents:$false -WhatIf
+Set-StartupParameter -SqlInstance sql2016  -IncreasedExtents:$false -WhatIf
 
 Shows what would happen if you attempted to configure the SQL Instance sql2016 to IncreasedExtents = False (no -E)
 
 .EXAMPLE
-Set-DbaStartupParameter -SqlInstance server1\instance1 -SingleUser -TraceFlags 8032,8048
+Set-StartupParameter -SqlInstance server1\instance1 -SingleUser -TraceFlags 8032,8048
 This will append Trace Flags 8032 and 8048 to the startup parameters
 
 .EXAMPLE
-Set-DbaStartupParameter -SqlInstance sql2016 -SingleUser:$false -TraceFlagsOverride
+Set-StartupParameter -SqlInstance sql2016 -SingleUser:$false -TraceFlagsOverride
 This will remove all trace flags and set SinguleUser to false
 
 .EXAMPLE
-Set-DbaStartupParameter -SqlInstance server1\instance1 -SingleUser -TraceFlags 8032,8048 -TraceFlagsOverride
+Set-StartupParameter -SqlInstance server1\instance1 -SingleUser -TraceFlags 8032,8048 -TraceFlagsOverride
 
 This will set Trace Flags 8032 and 8048 to the startup parameters, removing any existing Trace Flags
 
 .EXAMPLE
-Set-DbaStartupParameter -SqlInstance sql2016 -SingleUser:$false -TraceFlagsOverride -Offline
+Set-StartupParameter -SqlInstance sql2016 -SingleUser:$false -TraceFlagsOverride -Offline
 
 This will remove all trace flags and set SinguleUser to false from an offline instance
 
 .EXAMPLE
-Set-DbaStartupParameter -SqlInstance sql2016 -ErrorLog c:\Sql\ -Offline
+Set-StartupParameter -SqlInstance sql2016 -ErrorLog c:\Sql\ -Offline
 
 This will attempt to change the ErrorLog path to c:\sql\. However, with the offline switch this will not happen. To force it, use the -Force switch like so:
 
-Set-DbaStartupParameter -SqlInstance sql2016 -ErrorLog c:\Sql\ -Offline -Force
+Set-StartupParameter -SqlInstance sql2016 -ErrorLog c:\Sql\ -Offline -Force
 
 .EXAMPLE
 
-$StartupConfig = Get-DbaStartupParameter -SqlInstance server1\instance1
-Set-DbaStartupParameter -SqlInstance server1\instance1 -SingleUser -NoLoggingToWinEvents
+$StartupConfig = Get-StartupParameter -SqlInstance server1\instance1
+Set-StartupParameter -SqlInstance server1\instance1 -SingleUser -NoLoggingToWinEvents
 #Restart your SQL instance with the tool of choice
 #Do Some work
-Set-DbaStartupParameter -SqlInstance server1\instance1 -StartUpConfig $StartUpConfig
+Set-StartupParameter -SqlInstance server1\instance1 -StartUpConfig $StartUpConfig
 #Restart your SQL instance with the tool of choice and you're back to normal
 
 In this example we take a copy of the existing startup configuration of server1\instance1
@@ -173,7 +173,7 @@ After the work has been completed, we can push the original startup parameters b
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "High")]
     param ([parameter(Mandatory = $true)]
         [Alias("ServerInstance", "SqlServer")]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [PSCredential]$SqlCredential,
         [PSCredential]$Credential,
         [string]$MasterData,
@@ -214,7 +214,7 @@ After the work has been completed, we can push the original startup parameters b
         }
 
         #Get Current parameters:
-        $currentstartup = Get-DbaStartupParameter -SqlInstance $server -Credential $Credential
+        $currentstartup = Get-StartupParameter -SqlInstance $server -Credential $Credential
         $originalparamstring = $currentstartup.ParameterString
 
         Write-Message -Level Output -Message "Original startup parameter string: $originalparamstring"
@@ -246,7 +246,7 @@ After the work has been completed, we can push the original startup parameters b
                     if ($Force) {
                         $ParameterString += "-d$($newstartup.MasterData);"
                     }
-                    elseif (Test-DbaSqlPath -SqlInstance $server -SqlCredential $SqlCredential -Path (Split-Path $newstartup.MasterData -Parent)) {
+                    elseif (Test-SqlPath -SqlInstance $server -SqlCredential $SqlCredential -Path (Split-Path $newstartup.MasterData -Parent)) {
                         $ParameterString += "-d$($newstartup.MasterData);"
                     }
                     else {
@@ -269,7 +269,7 @@ After the work has been completed, we can push the original startup parameters b
                     if ($Force) {
                         $ParameterString += "-e$($newstartup.ErrorLog);"
                     }
-                    elseif (Test-DbaSqlPath -SqlInstance $server -SqlCredential $SqlCredential -Path (Split-Path $newstartup.ErrorLog -Parent)) {
+                    elseif (Test-SqlPath -SqlInstance $server -SqlCredential $SqlCredential -Path (Split-Path $newstartup.ErrorLog -Parent)) {
                         $ParameterString += "-e$($newstartup.ErrorLog);"
                     }
                     else {
@@ -292,7 +292,7 @@ After the work has been completed, we can push the original startup parameters b
                     if ($Force) {
                         $ParameterString += "-l$($newstartup.MasterLog);"
                     }
-                    elseif (Test-DbaSqlPath -SqlInstance $server -SqlCredential $SqlCredential -Path (Split-Path $newstartup.MasterLog -Parent)) {
+                    elseif (Test-SqlPath -SqlInstance $server -SqlCredential $SqlCredential -Path (Split-Path $newstartup.MasterLog -Parent)) {
                         $ParameterString += "-l$($newstartup.MasterLog);"
                     }
                     else {
@@ -427,12 +427,12 @@ After the work has been completed, we can push the original startup parameters b
             try {
                 if ($Credential) {
                     $response = Invoke-ManagedComputerCommand -ComputerName $instance -Credential $Credential -ScriptBlock $Scriptblock -ArgumentList $instance, $displayname, $ParameterString -EnableException
-                    $output = Get-DbaStartupParameter -SqlInstance $server -Credential $Credential -EnableException
+                    $output = Get-StartupParameter -SqlInstance $server -Credential $Credential -EnableException
                     Add-Member -Force -InputObject $output -MemberType NoteProperty -Name OriginalStartupParameters -Value $originalparamstring
                 }
                 else {
                     $response = Invoke-ManagedComputerCommand -ComputerName $instance -ScriptBlock $Scriptblock -ArgumentList $instance, $displayname, $ParameterString -EnableException
-                    $output = Get-DbaStartupParameter -SqlInstance $server -EnableException
+                    $output = Get-StartupParameter -SqlInstance $server -EnableException
                     Add-Member -Force -InputObject $output -MemberType NoteProperty -Name OriginalStartupParameters -Value $originalparamstring
                 }
 

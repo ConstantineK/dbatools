@@ -34,7 +34,7 @@ function Invoke-Command2 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUsePSCredentialType", "")]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingPlainTextForPassword", "")]
     param (
-        [DbaInstanceParameter]$ComputerName = $env:COMPUTERNAME,
+        $ComputerName = $env:COMPUTERNAME,
         [object]$Credential,
         [scriptblock]$ScriptBlock,
         [object[]]$ArgumentList,
@@ -85,7 +85,7 @@ function Invoke-Command2 {
         # Tell the system to clean up if the session expires
         [Sqlcollaborative.Dbatools.Connection.ConnectionHost]::PSSessionSet($runspaceId, $ComputerName.ComputerName, $currentSession)
 
-        if (-not (Get-DbaConfigValue -FullName 'PSRemoting.Sessions.Enable' -Fallback $true)) {
+        if (-not (Get-ConfigValue -FullName 'PSRemoting.Sessions.Enable' -Fallback $true)) {
             $currentSession | Remove-PSSession
         }
     }

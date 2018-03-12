@@ -1,8 +1,8 @@
 #ValidationTags#FlowControl,Pipeline#
-function Test-DbaSpn {
+function Test-Spn {
     <#
         .SYNOPSIS
-            Test-DbaSpn will determine what SPNs *should* be set for a given server (and any instances of SQL running on it) and return
+            Test-Spn will determine what SPNs *should* be set for a given server (and any instances of SQL running on it) and return
             whether the SPNs are set or not.
 
         .DESCRIPTION
@@ -35,27 +35,27 @@ function Test-DbaSpn {
             Author: Drew Furgiuele (@pittfurg), http://www.port1433.com
             Editor: niphlod
 
-            
-            
+
+
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
-            https://dbatools.io/Test-DbaSpn
+            https://dbatools.io/Test-Spn
 
         .EXAMPLE
-            Test-DbaSpn -ComputerName SQLSERVERA -Credential (Get-Credential)
+            Test-Spn -ComputerName SQLSERVERA -Credential (Get-Credential)
 
             Connects to a computer (SQLSERVERA) and queries WMI for all SQL instances and return "required" SPNs. It will then take each SPN it generates
             and query Active Directory to make sure the SPNs are set.
 
         .EXAMPLE
-            Test-DbaSpn -ComputerName SQLSERVERA,SQLSERVERB -Credential (Get-Credential)
+            Test-Spn -ComputerName SQLSERVERA,SQLSERVERB -Credential (Get-Credential)
 
             Connects to multiple computers (SQLSERVERA, SQLSERVERB) and queries WMI for all SQL instances and return "required" SPNs.
             It will then take each SPN it generates and query Active Directory to make sure the SPNs are set.
 
         .EXAMPLE
-            Test-DbaSpn -ComputerName SQLSERVERC -Credential (Get-Credential)
+            Test-Spn -ComputerName SQLSERVERC -Credential (Get-Credential)
 
             Connects to a computer (SQLSERVERC) on a specified and queries WMI for all SQL instances and return "required" SPNs.
             It will then take each SPN it generates and query Active Directory to make sure the SPNs are set. Note that the credential you pass must have be a valid login with appropriate rights on the domain
@@ -74,10 +74,10 @@ function Test-DbaSpn {
     process {
         foreach ($computer in $ComputerName) {
             try {
-                $resolved = Resolve-DbaNetworkName -ComputerName $computer.ComputerName -Credential $Credential -ErrorAction Stop
+                $resolved = Resolve-NetworkName -ComputerName $computer.ComputerName -Credential $Credential -ErrorAction Stop
             }
             catch {
-                $resolved = Resolve-DbaNetworkName -ComputerName $computer.ComputerName -Turbo
+                $resolved = Resolve-NetworkName -ComputerName $computer.ComputerName -Turbo
             }
 
             if ($null -eq $resolved.IPAddress) {
@@ -268,7 +268,7 @@ function Test-DbaSpn {
                 if ($spn.InstanceServiceAccount -notin $resultCache.Keys) {
                     Write-Message -Message "Searching for $serviceAccount" -Level Verbose
                     try {
-                        $result = Get-DbaADObject -ADObject $serviceAccount -Type $searchfor -Credential $Credential -EnableException
+                        $result = Get-ADObject -ADObject $serviceAccount -Type $searchfor -Credential $Credential -EnableException
                         $resultCache[$spn.InstanceServiceAccount] = $result
                     }
                     catch {

@@ -7,7 +7,7 @@ $global:HelpTestEnumeratedArrays = @(
 )
 
 $global:HelpTestSkipParameterType = @{
-    "Get-DbaCmObject"      = @("DoNotUse")
-    "Test-DbaCmConnection" = @("Type")
-    "Get-DbaService"       = @("DoNotUse")
+    "Get-CmObject"      = @("DoNotUse")
+    "Test-CmConnection" = @("Type")
+    "Get-Service"       = @("DoNotUse")
 }

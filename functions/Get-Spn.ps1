@@ -1,5 +1,5 @@
 #ValidationTags#FlowControl,Pipeline#
-function Get-DbaSpn {
+function Get-Spn {
     <#
 .SYNOPSIS
 Returns a list of set service principal names for a given computer/AD account
@@ -26,25 +26,25 @@ User credential to connect to the remote servers or active directory.
 Tags: SPN
 Author: Drew Furgiuele (@pittfurg), http://www.port1433.com
 
-dbatools PowerShell module (https://dbatools.io)
-Copyright (C) 2016 Chrissy LeMaire
+sqlshellPowerShell module (https://dbatools.io)
+
 License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
 .LINK
-https://dbatools.io/Get-DbaSpn
+https://dbatools.io/Get-Spn
 
 .EXAMPLE
-Get-DbaSpn -ServerName SQLSERVERA -Credential (Get-Credential)
+Get-Spn -ServerName SQLSERVERA -Credential (Get-Credential)
 
 Returns a custom object with SearchTerm (ServerName) and the SPNs that were found
 
 .EXAMPLE
-Get-DbaSpn -AccountName domain\account -Credential (Get-Credential)
+Get-Spn -AccountName domain\account -Credential (Get-Credential)
 
 Returns a custom object with SearchTerm (domain account) and the SPNs that were found
 
 .EXAMPLE
-Get-DbaSpn -ServerName SQLSERVERA,SQLSERVERB -Credential (Get-Credential)
+Get-Spn -ServerName SQLSERVERA,SQLSERVERB -Credential (Get-Credential)
 
 Returns a custom object with SearchTerm (ServerName) and the SPNs that were found for multiple computers
 #>
@@ -68,7 +68,7 @@ Returns a custom object with SearchTerm (ServerName) and the SPNs that were foun
                     $searchfor = 'Computer'
                 }
                 try {
-                    $Result = Get-DbaADObject -ADObject $account -Type $searchfor -Credential $Credential -EnableException
+                    $Result = Get-ADObject -ADObject $account -Type $searchfor -Credential $Credential -EnableException
                 }
                 catch {
                     Write-Message -Message "AD lookup failure. This may be because the domain cannot be resolved for the SQL Server service account ($Account)." -Level Warning
@@ -128,7 +128,7 @@ Returns a custom object with SearchTerm (ServerName) and the SPNs that were foun
             }
 
             Write-Message -Message "Getting SQL Server SPN for $computer" -Level Verbose
-            $spns = Test-DbaSpn -ComputerName $computer -Credential $Credential
+            $spns = Test-Spn -ComputerName $computer -Credential $Credential
 
             $sqlspns = 0
             $spncount = $spns.count

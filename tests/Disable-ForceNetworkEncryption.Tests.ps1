@@ -3,7 +3,7 @@
 . "$PSScriptRoot\constants.ps1"
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
-    $results = Disable-DbaForceNetworkEncryption $script:instance1 -EnableException
+    $results = Disable-ForceNetworkEncryption $script:instance1 -EnableException
 
     It "returns false" {
         $results.ForceEncryption -eq $false

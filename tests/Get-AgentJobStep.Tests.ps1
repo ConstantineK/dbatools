@@ -5,7 +5,7 @@
 Describe "$CommandName Unit Tests" -Tag 'UnitTests' {
     Context "Validate parameters" {
         $paramCount = 5
-        [object[]]$params = (Get-ChildItem function:\Get-DbaAgentJobStep).Parameters.Keys
+        [object[]]$params = (Get-ChildItem function:\Get-AgentJobStep).Parameters.Keys
         $knownParameters = 'SqlInstance', 'SqlCredential', 'Job', 'ExcludeJob', 'EnableException'
         It "Contains our specific parameters" {
             ( (Compare-Object -ReferenceObject $knownParameters -DifferenceObject $params -IncludeEqual | Where-Object SideIndicator -eq "==").Count ) | Should Be $paramCount
@@ -68,14 +68,14 @@ Describe "$CommandName Unittests" -Tag 'UnitTests' {
 
             It "Honors the Job parameter" {
                 $Results = @()
-                $Results += Get-DbaAgentJobStep -SqlInstance 'SQLServerName' -Job 'Job1'
+                $Results += Get-AgentJobStep -SqlInstance 'SQLServerName' -Job 'Job1'
                 $Results.Length | Should Be 2
                 $Results.Name | Should Match 'Job1'
                 $Results.Name | Should Match 'Job1Step[12]'
             }
             It "Honors the ExcludeJob parameter" {
                 $Results = @()
-                $Results += Get-DbaAgentJobStep -SqlInstance 'SQLServerName' -ExcludeJob 'Job1'
+                $Results += Get-AgentJobStep -SqlInstance 'SQLServerName' -ExcludeJob 'Job1'
                 $Results.Length | Should Be 4
                 $Results.Name | Should Match 'Job[23]Step[12]'
             }

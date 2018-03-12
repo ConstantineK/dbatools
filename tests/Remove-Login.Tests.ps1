@@ -7,13 +7,13 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         $login = "dbatoolsci_removelogin"
         $password = 'MyV3ry$ecur3P@ssw0rd'
         $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
-        $newlogin = New-DbaLogin -SqlInstance $script:instance1 -Login $login -Password $securePassword
+        $newlogin = New-Login -SqlInstance $script:instance1 -Login $login -Password $securePassword
     }
 
     It "removes the login" {
-        $results = Remove-DbaLogin -SqlInstance $script:instance1 -Login $login -Confirm:$false
+        $results = Remove-Login -SqlInstance $script:instance1 -Login $login -Confirm:$false
         $results.Status -eq "Dropped"
-        $login1 = Get-Dbalogin -SqlInstance $script:instance1 -login $removed
+        $login1 = Get-login -SqlInstance $script:instance1 -login $removed
         $null -eq $login1
     }
 }

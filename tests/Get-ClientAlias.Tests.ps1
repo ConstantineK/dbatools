@@ -4,14 +4,14 @@
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     BeforeAll {
-        $newalias = New-DbaClientAlias -ServerName sql2016 -Alias dbatoolscialias -Verbose:$false
+        $newalias = New-ClientAlias -ServerName sql2016 -Alias dbatoolscialias -Verbose:$false
     }
     AfterAll {
-        $newalias | Remove-DbaClientAlias
+        $newalias | Remove-ClientAlias
     }
 
     Context "gets the alias" {
-        $results = Get-DbaClientAlias
+        $results = Get-ClientAlias
         It "returns accurate information" {
             $results.AliasName -contains 'dbatoolscialias' | Should Be $true
         }

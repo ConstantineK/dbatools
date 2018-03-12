@@ -1,4 +1,4 @@
-function Test-DbaRestoreVersion {
+function Test-RestoreVersion {
     <#
     .SYNOPSIS
         Checks that the restore files are from a version of SQL Server that can be restored on the target version
@@ -10,7 +10,7 @@ function Test-DbaRestoreVersion {
         LastLSN and FirstLSN in sequential files
 
     .PARAMETER FilteredRestoreFiles
-        This is just an object consisting of the output from Read-DbaBackupHeader. Normally this will have been filtered down to a restorable chain
+        This is just an object consisting of the output from Read-BackupHeader. Normally this will have been filtered down to a restorable chain
         before arriving here. (ie; only 1 anchoring Full backup)
 
     .PARAMETER SqlInstance
@@ -25,12 +25,12 @@ function Test-DbaRestoreVersion {
     .NOTES
         Author: Stuart Moore (@napalmgram), stuart-moore.com
         Tags:
-        dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-        Copyright (C) 2016 Chrissy LeMaire
+        sqlshellPowerShell module (https://dbatools.io, clemaire@gmail.com)
+
         License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .EXAMPLE
-        Test-DbaRestoreVersion -FilteredRestoreFiles $FilteredFiles -SqlInstance server1\instance1
+        Test-RestoreVersion -FilteredRestoreFiles $FilteredFiles -SqlInstance server1\instance1
 
         Checks that the Restore chain in $FilteredFiles is compatible with the SQL Server version of server1\instance1
 

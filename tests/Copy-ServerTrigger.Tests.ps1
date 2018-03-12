@@ -10,14 +10,14 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
                     ON ALL SERVER FOR LOGON -- Tells you it's a logon trigger
                     AS
                     PRINT 'hello'"
-            $server = Connect-DbaInstance -SqlInstance $script:instance1
+            $server = Connect-Instance -SqlInstance $script:instance1
             $server.Query($sql)
         }
         AfterAll {
             $server.Query("DROP TRIGGER [$triggername] ON ALL SERVER")
 
             try {
-                $server1 = Connect-DbaInstance -SqlInstance $script:instance2
+                $server1 = Connect-Instance -SqlInstance $script:instance2
                 $server1.Query("DROP TRIGGER [$triggername] ON ALL SERVER")
             }
             catch {
@@ -25,7 +25,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
             }
         }
 
-        $results = Copy-DbaServerTrigger -Source $script:instance1 -Destination $script:instance2 -WarningVariable warn -WarningAction SilentlyContinue # -ServerTrigger $triggername
+        $results = Copy-ServerTrigger -Source $script:instance1 -Destination $script:instance2 -WarningVariable warn -WarningAction SilentlyContinue # -ServerTrigger $triggername
 
         It "should report success" {
             $results.Status | Should Be "Successful"

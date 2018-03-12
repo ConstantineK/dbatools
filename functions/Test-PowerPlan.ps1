@@ -1,4 +1,4 @@
-function Test-DbaPowerPlan {
+function Test-PowerPlan {
     <#
         .SYNOPSIS
             Checks the Power Plan settings for compliance with best practices, which recommend High Performance for SQL Server.
@@ -31,20 +31,20 @@ function Test-DbaPowerPlan {
             Tags: PowerPlan
             Requires: WMI access to servers
 
-            dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-            Copyright (C) 2016 Chrissy LeMaire
+            sqlshellPowerShell module (https://dbatools.io, clemaire@gmail.com)
+
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
-            https://dbatools.io/Test-DbaPowerPlan
+            https://dbatools.io/Test-PowerPlan
 
         .EXAMPLE
-            Test-DbaPowerPlan -ComputerName sqlserver2014a
+            Test-PowerPlan -ComputerName sqlserver2014a
 
             Checks the Power Plan settings for sqlserver2014a and indicates whether or not it complies with best practices.
 
         .EXAMPLE
-            Test-DbaPowerPlan -ComputerName sqlserver2014a -CustomPowerPlan 'Maximum Performance'
+            Test-PowerPlan -ComputerName sqlserver2014a -CustomPowerPlan 'Maximum Performance'
 
             Checks the Power Plan settings for sqlserver2014a and indicates whether or not it is set to the custom plan "Maximum Performance".
     #>
@@ -59,7 +59,7 @@ function Test-DbaPowerPlan {
     )
 
     begin {
-        Test-DbaDeprecation -DeprecatedOn 1.0.0 -Parameter Detailed
+        Test-Deprecation -DeprecatedOn 1.0.0 -Parameter Detailed
 
         $bpPowerPlan = [PSCustomObject]@{
             InstanceID  = '8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c'
@@ -71,7 +71,7 @@ function Test-DbaPowerPlan {
 
     process {
         foreach ($computer in $ComputerName) {
-            $server = Resolve-DbaNetworkName -ComputerName $computer -Credential $credential
+            $server = Resolve-NetworkName -ComputerName $computer -Credential $credential
 
             $computerResolved = $server.FullComputerName
 

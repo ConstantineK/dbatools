@@ -1,5 +1,5 @@
 #ValidationTags#FlowControl,Pipeline#
-function Remove-DbaSpn {
+function Remove-Spn {
     <#
 .SYNOPSIS
 Removes an SPN for a given service account in active directory and also removes delegation to the same SPN, if found
@@ -35,35 +35,35 @@ Shows what would happen if the command was executed
 Tags: SPN
 Author: Drew Furgiuele (@pittfurg), http://www.port1433.com
 
-dbatools PowerShell module (https://dbatools.io)
-Copyright (C) 2016 Chrissy LeMaire
+sqlshellPowerShell module (https://dbatools.io)
+
 License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
 .LINK
-https://dbatools.io/Remove-DbaSpn
+https://dbatools.io/Remove-Spn
 
 .EXAMPLE
-Remove-DbaSpn -SPN MSSQLSvc\SQLSERVERA.domain.something -ServiceAccount domain\account
+Remove-Spn -SPN MSSQLSvc\SQLSERVERA.domain.something -ServiceAccount domain\account
 
 Connects to Active Directory and removes a provided SPN from the given account (and also the relative delegation)
 
 .EXAMPLE
-Remove-DbaSpn -SPN MSSQLSvc\SQLSERVERA.domain.something -ServiceAccount domain\account -EnableException
+Remove-Spn -SPN MSSQLSvc\SQLSERVERA.domain.something -ServiceAccount domain\account -EnableException
 
 Connects to Active Directory and removes a provided SPN from the given account, suppressing all error messages and throw exceptions that can be caught instead
 
 .EXAMPLE
-Remove-DbaSpn -SPN MSSQLSvc\SQLSERVERA.domain.something -ServiceAccount domain\account -Credential (Get-Credential)
+Remove-Spn -SPN MSSQLSvc\SQLSERVERA.domain.something -ServiceAccount domain\account -Credential (Get-Credential)
 
 Connects to Active Directory and removes a provided SPN to the given account. Uses alternative account to connect to AD.
 
 .EXAMPLE
-Test-DbaSpn -ComputerName sql2005 | Where { $_.isSet -eq $true } | Remove-DbaSpn -WhatIf
+Test-Spn -ComputerName sql2005 | Where { $_.isSet -eq $true } | Remove-Spn -WhatIf
 
 Shows what would happen trying to remove all set SPNs for sql2005 and the relative delegations
 
 .EXAMPLE
-Test-DbaSpn -ComputerName sql2005 | Where { $_.isSet -eq $true } | Remove-DbaSpn
+Test-Spn -ComputerName sql2005 | Where { $_.isSet -eq $true } | Remove-Spn
 
 Removes all set SPNs for sql2005 and the relative delegations
 
@@ -89,7 +89,7 @@ Removes all set SPNs for sql2005 and the relative delegations
             $searchfor = 'Computer'
         }
         try {
-            $Result = Get-DbaADObject -ADObject $ServiceAccount -Type $searchfor -Credential $Credential -EnableException
+            $Result = Get-ADObject -ADObject $ServiceAccount -Type $searchfor -Credential $Credential -EnableException
         }
         catch {
             Stop-Function -Message "AD lookup failure. This may be because the domain cannot be resolved for the SQL Server service account ($ServiceAccount). $($_.Exception.Message)" -EnableException $EnableException -InnerErrorRecord $_ -Target $ServiceAccount

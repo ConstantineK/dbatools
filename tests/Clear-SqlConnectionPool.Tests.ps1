@@ -4,6 +4,6 @@
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     It "doesn't throw" {
-        { Clear-DbaSqlConnectionPool }  | Should Not Throw
+        { Clear-SqlConnectionPool }  | Should Not Throw
     }
 }

@@ -141,7 +141,7 @@ function Copy-Database {
     [CmdletBinding(DefaultParameterSetName = "DbBackup", SupportsShouldProcess = $true)]
     Param (
         [parameter(Mandatory = $false)]
-        [DbaInstanceParameter]
+
         $Source,
 
         [PSCredential]
@@ -149,7 +149,7 @@ function Copy-Database {
         $SourceSqlCredential,
 
         [parameter(Mandatory = $true)]
-        [DbaInstanceParameter]
+
         $Destination,
 
         [PSCredential]

@@ -5,7 +5,7 @@
 Describe "$CommandName Integration Tests" -Tags "IntegrationTests" {
     Context "Verifying command works" {
         It "returns a result with the right computername and name is not null" {
-            $results = Get-DbaPfDataCollectorSet | Select-Object -First 1
+            $results = Get-PfDataCollectorSet | Select-Object -First 1
             $results.ComputerName | Should Be $env:COMPUTERNAME
             $results.Name | Should Not Be $null
         }

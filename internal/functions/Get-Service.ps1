@@ -1,4 +1,4 @@
-function Get-DbaService {
+function Get-Service {
     <#
     .SYNOPSIS
         Uses WMI/CIM to scan for the existance of a specific windows services.
@@ -6,7 +6,7 @@ function Get-DbaService {
     .DESCRIPTION
         Uses WMI/CIM to scan for the existance of a specific windows services.
 
-        Use Get-DbaSqlService if you are interested in scanning for sql server services exclusively.
+        Use Get-SqlService if you are interested in scanning for sql server services exclusively.
 
     .PARAMETER ComputerName
         The computer to target. Uses localhost by default.
@@ -29,18 +29,18 @@ function Get-DbaService {
         Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
     .EXAMPLE
-        Get-DbaService -Name LanmanServer
+        Get-Service -Name LanmanServer
 
         Returns information on the LanmanServer service from localhost.
 
     .EXAMPLE
-        Get-ADComputer -Filter * | Get-DbaService -Name Browser
+        Get-ADComputer -Filter * | Get-Service -Name Browser
 
         First retrieves all computer accounts from active directory, then scans all of those computers for the browser service.
         Note: THis may take seriously long time, you may also want to filter out computers that are offline before scanning for services.
 
     .EXAMPLE
-        Get-DbaService -ComputerName "server1","server2","server3" -Name Lanman%
+        Get-Service -ComputerName "server1","server2","server3" -Name Lanman%
 
         Scans the servers server1, server2 and server3 for all services whose name starts with 'lanman'
 #>
@@ -80,8 +80,8 @@ function Get-DbaService {
             foreach ($serviceName in $Name) {
                 Write-Message -Level Verbose -Message "Searching for services with name: $serviceName" -Target $computer.ComputerName
                 try {
-                    if (Test-Bound "Credential") { Get-DbaCmObject -Query "SELECT * FROM Win32_Service WHERE Name LIKE '$serviceName'" -ComputerName $computer.ComputerName -Credential $Credential -EnableException -DoNotUse $DoNotUse }
-                    else { Get-DbaCmObject -Query "SELECT * FROM Win32_Service WHERE Name LIKE '$serviceName'" -ComputerName $computer.ComputerName -EnableException -DoNotUse $DoNotUse }
+                    if (Test-Bound "Credential") { Get-CmObject -Query "SELECT * FROM Win32_Service WHERE Name LIKE '$serviceName'" -ComputerName $computer.ComputerName -Credential $Credential -EnableException -DoNotUse $DoNotUse }
+                    else { Get-CmObject -Query "SELECT * FROM Win32_Service WHERE Name LIKE '$serviceName'" -ComputerName $computer.ComputerName -EnableException -DoNotUse $DoNotUse }
                 }
                 catch {
                     if ($_.CategoryInfo.Category -eq "OpenError") {
@@ -96,8 +96,8 @@ function Get-DbaService {
             foreach ($serviceDisplayName in $DisplayName) {
                 Write-Message -Level Verbose -Message "Searching for services with display name: $serviceDisplayName" -Target $computer.ComputerName
                 try {
-                    if (Test-Bound "Credential") { Get-DbaCmObject -Query "SELECT * FROM Win32_Service WHERE DisplayName LIKE '$serviceDisplayName'" -ComputerName $computer.ComputerName -Credential $Credential -EnableException -DoNotUse $DoNotUse }
-                    else { Get-DbaCmObject -Query "SELECT * FROM Win32_Service WHERE DisplayName LIKE '$serviceDisplayName'" -ComputerName $computer.ComputerName -EnableException -DoNotUse $DoNotUse }
+                    if (Test-Bound "Credential") { Get-CmObject -Query "SELECT * FROM Win32_Service WHERE DisplayName LIKE '$serviceDisplayName'" -ComputerName $computer.ComputerName -Credential $Credential -EnableException -DoNotUse $DoNotUse }
+                    else { Get-CmObject -Query "SELECT * FROM Win32_Service WHERE DisplayName LIKE '$serviceDisplayName'" -ComputerName $computer.ComputerName -EnableException -DoNotUse $DoNotUse }
                 }
                 catch {
                     if ($_.CategoryInfo.Category -eq "OpenError") {

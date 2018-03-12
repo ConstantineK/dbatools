@@ -126,11 +126,11 @@ function Copy-Login {
     [CmdletBinding(DefaultParameterSetName = "Default", SupportsShouldProcess = $true)]
     Param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
-        [DbaInstanceParameter]$Source,
+        $Source,
         [PSCredential]
         $SourceSqlCredential,
         [parameter(ParameterSetName = "Destination", Mandatory = $true)]
-        [DbaInstanceParameter]$Destination,
+        $Destination,
         [PSCredential]
         $DestinationSqlCredential,
         [object[]]$Login,

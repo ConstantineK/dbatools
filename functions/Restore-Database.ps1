@@ -1,4 +1,4 @@
-function Restore-DbaDatabase {
+function Restore-Database {
     <#
     .SYNOPSIS
         Restores a SQL Server Database from a set of backupfiles
@@ -103,7 +103,7 @@ function Restore-DbaDatabase {
         Useful if restoring a copy to the same sql server for testing.
 
     .PARAMETER TrustDbBackupHistory
-        This switch can be used when piping the output of Get-DbaBackupHistory or Backup-DbaDatabase into this command.
+        This switch can be used when piping the output of Get-BackupHistory or Backup-Database into this command.
         It allows the user to say that they trust that the output from those commands is correct, and skips the file header read portion of the process. This means a faster process, but at the risk of not knowing till halfway through the restore that something is wrong with a file.
 
     .PARAMETER MaxTransferSize
@@ -140,20 +140,20 @@ function Restore-DbaDatabase {
         If set will perform recovery on the indicated database
 
     .PARAMETER AllowContinue
-        By default, Restore-DbaDatabase will stop restoring any databases if it comes across an error.
+        By default, Restore-Database will stop restoring any databases if it comes across an error.
         Use this switch to enable it to restore all databases without issues.
 
     .PARAMETER GetBackupInformation
-        Passing a string value into this parameter will cause a global variable to be created holding the output of Get-DbaBackupInformation
+        Passing a string value into this parameter will cause a global variable to be created holding the output of Get-BackupInformation
 
     .PARAMETER SelectBackupInformation
-        Passing a string value into this parameter will cause a global variable to be created holding the output of Select-DbaBackupInformation
+        Passing a string value into this parameter will cause a global variable to be created holding the output of Select-BackupInformation
 
     .PARAMETER FormatBackupInformation
-        Passing a string value into this parameter will cause a global variable to be created holding the output of Format-DbaBackupInformation
+        Passing a string value into this parameter will cause a global variable to be created holding the output of Format-BackupInformation
 
     .PARAMETER TestBackupInformation
-        Passing a string value into this parameter will cause a global variable to be created holding the output of Test-DbaBackupInformation
+        Passing a string value into this parameter will cause a global variable to be created holding the output of Test-BackupInformation
 
     .PARAMETER StopAfterGetBackupInformation
         Switch which will cause the function to exit after returning GetBackupInformation
@@ -174,7 +174,7 @@ function Restore-DbaDatabase {
         Indicates whether CDC information should be restored as part of the database
 
     .PARAMETER PageRestore
-        Passes in an object from Get-DbaSuspectPages containing suspect pages from a single database.
+        Passes in an object from Get-SuspectPages containing suspect pages from a single database.
         Setting this Parameter will cause an Online Page restore if the target Instance is Enterprise Edition, or offline if not.
         This will involve taking a tail log backup, so you must check your restore chain once it has completed
 
@@ -193,53 +193,53 @@ function Restore-DbaDatabase {
         Shows what would happen if the command would execute, but does not actually perform the command
 
     .EXAMPLE
-        Restore-DbaDatabase -SqlInstance server1\instance1 -Path \\server2\backups
+        Restore-Database -SqlInstance server1\instance1 -Path \\server2\backups
 
         Scans all the backup files in \\server2\backups, filters them and restores the database to server1\instance1
 
     .EXAMPLE
-        Restore-DbaDatabase -SqlInstance server1\instance1 -Path \\server2\backups -MaintenanceSolutionBackup -DestinationDataDirectory c:\restores
+        Restore-Database -SqlInstance server1\instance1 -Path \\server2\backups -MaintenanceSolutionBackup -DestinationDataDirectory c:\restores
 
         Scans all the backup files in \\server2\backups$ stored in an Ola Hallengren style folder structure,
         filters them and restores the database to the c:\restores folder on server1\instance1
 
     .EXAMPLE
-        Get-ChildItem c:\SQLbackups1\, \\server\sqlbackups2 | Restore-DbaDatabase -SqlInstance server1\instance1
+        Get-ChildItem c:\SQLbackups1\, \\server\sqlbackups2 | Restore-Database -SqlInstance server1\instance1
 
         Takes the provided files from multiple directories and restores them on  server1\instance1
 
     .EXAMPLE
         $RestoreTime = Get-Date('11:19 23/12/2016')
-        Restore-DbaDatabase -SqlInstance server1\instance1 -Path \\server2\backups -MaintenanceSolutionBackup -DestinationDataDirectory c:\restores -RestoreTime $RestoreTime
+        Restore-Database -SqlInstance server1\instance1 -Path \\server2\backups -MaintenanceSolutionBackup -DestinationDataDirectory c:\restores -RestoreTime $RestoreTime
 
         Scans all the backup files in \\server2\backups stored in an Ola Hallengren style folder structure,
         filters them and restores the database to the c:\restores folder on server1\instance1 up to 11:19 23/12/2016
 
     .EXAMPLE
-        Restore-DbaDatabase -SqlInstance server1\instance1 -Path \\server2\backups -DestinationDataDirectory c:\restores -OutputScriptOnly | Select-Object -ExpandProperty Tsql | Out-File -Filepath c:\scripts\restore.sql
+        Restore-Database -SqlInstance server1\instance1 -Path \\server2\backups -DestinationDataDirectory c:\restores -OutputScriptOnly | Select-Object -ExpandProperty Tsql | Out-File -Filepath c:\scripts\restore.sql
 
         Scans all the backup files in \\server2\backups stored in an Ola Hallengren style folder structure,
         filters them and generate the T-SQL Scripts to restore the database to the latest point in time,
         and then stores the output in a file for later retrieval
 
     .EXAMPLE
-        Restore-DbaDatabase -SqlInstance server1\instance1 -Path c:\backups -DestinationDataDirectory c:\DataFiles -DestinationLogDirectory c:\LogFile
+        Restore-Database -SqlInstance server1\instance1 -Path c:\backups -DestinationDataDirectory c:\DataFiles -DestinationLogDirectory c:\LogFile
 
         Scans all the files in c:\backups and then restores them onto the SQL Server Instance server1\instance1, placing data files
         c:\DataFiles and all the log files into c:\LogFiles
 
     .EXAMPLE
-        Restore-DbaDatabase -SqlInstance server1\instance1 -Path http://demo.blob.core.windows.net/backups/dbbackup.bak -AzureCredential MyAzureCredential
+        Restore-Database -SqlInstance server1\instance1 -Path http://demo.blob.core.windows.net/backups/dbbackup.bak -AzureCredential MyAzureCredential
 
         Will restore the backup held at  http://demo.blob.core.windows.net/backups/dbbackup.bak to server1\instance1. The connection to Azure will be made using the
         credential MyAzureCredential held on instance Server1\instance1
 
     .EXAMPLE
         $File = Get-ChildItem c:\backups, \\server1\backups -recurse
-        $File | Restore-DbaDatabase -SqlInstance Server1\Instance -useDestinationDefaultDirectories
+        $File | Restore-Database -SqlInstance Server1\Instance -useDestinationDefaultDirectories
 
         This will take all of the files found under the folders c:\backups and \\server1\backups, and pipeline them into
-        Restore-DbaDatabase. Restore-DbaDatabase will then scan all of the files, and restore all of the databases included
+        Restore-Database. Restore-Database will then scan all of the files, and restore all of the databases included
         to the latest point in time covered by their backups. All data and log files will be moved to the default SQL Server
         folder for those file types as defined on the target instance.
 
@@ -247,7 +247,7 @@ function Restore-DbaDatabase {
         $files = Get-ChildItem C:\dbatools\db1
 
         #Restore database to a point in time
-        $files | Restore-DbaDatabase -SqlInstance server\instance1 `
+        $files | Restore-Database -SqlInstance server\instance1 `
                     -DestinationFilePrefix prefix -DatabaseName Restored  `
                     -RestoreTime (get-date "14:58:30 22/05/2017") `
                     -NoRecovery -WithReplace -StandbyDirectory C:\dbatools\standby
@@ -256,14 +256,14 @@ function Restore-DbaDatabase {
         Invoke-Sqlcmd2 -ServerInstance server\instance1 -Query "select top 1 * from Restored.dbo.steps order by dt desc"
 
         #Not quite there so let's roll on a bit:
-        $files | Restore-DbaDatabase -SqlInstance server\instance1 `
+        $files | Restore-Database -SqlInstance server\instance1 `
                     -DestinationFilePrefix prefix -DatabaseName Restored `
                     -continue -WithReplace -RestoreTime (get-date "15:09:30 22/05/2017") `
                     -StandbyDirectory C:\dbatools\standby
 
         Invoke-Sqlcmd2 -ServerInstance server\instance1 -Query "select top 1 * from restored.dbo.steps order by dt desc"
 
-        Restore-DbaDatabase -SqlInstance server\instance1 `
+        Restore-Database -SqlInstance server\instance1 `
                     -DestinationFilePrefix prefix -DatabaseName Restored `
                     -continue -WithReplace
 
@@ -274,14 +274,14 @@ function Restore-DbaDatabase {
         At each step, only the log files needed to roll the database forward are restored.
 
     .EXAMPLE
-        Restore-DbaDatabase -SqlInstance server\instance1 -Path c:\backups -DatabaseName example1 -WithNoRecovery
-        Restore-DbaDatabase -SqlInstance server\instance1 -Recover -DatabaseName example1
+        Restore-Database -SqlInstance server\instance1 -Path c:\backups -DatabaseName example1 -WithNoRecovery
+        Restore-Database -SqlInstance server\instance1 -Recover -DatabaseName example1
 
     .EXAMPLE
-        $SuspectPage = Get-DbaSuspectPage -SqlInstance server\instance1 -Database ProdFinance
-        Get-DbaBackupHistory - SqlInstance server\instance1 -Database -ProdFinance -Last | Restore-DbaDatabase -PageRestore $SuspectPage -PageRestoreTailFolder c:\temp -TrustDbBackupHistory -AllowContinues
+        $SuspectPage = Get-SuspectPage -SqlInstance server\instance1 -Database ProdFinance
+        Get-BackupHistory - SqlInstance server\instance1 -Database -ProdFinance -Last | Restore-Database -PageRestore $SuspectPage -PageRestoreTailFolder c:\temp -TrustDbBackupHistory -AllowContinues
 
-        Gets a list of Suspect Pages using Get-DbaSuspectPage. The uses Get-DbaBackupHistory and Restore-DbaDatabase to perform a restore of the suspect pages and bring them up to date
+        Gets a list of Suspect Pages using Get-SuspectPage. The uses Get-BackupHistory and Restore-Database to perform a restore of the suspect pages and bring them up to date
         If server\instance1 is Enterprise edition this will be done online, if not it will be performed offline
         AllowContinue is required to make sure we cope with existing files
 
@@ -289,15 +289,15 @@ function Restore-DbaDatabase {
         Tags: DisasterRecovery, Backup, Restore
         Author: Stuart Moore (@napalmgram), stuart-moore.com
 
-        dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-        Copyright (C) 2016 Chrissy LeMaire
+        sqlshellPowerShell module (https://dbatools.io, clemaire@gmail.com)
+
         License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 #>
     [CmdletBinding(SupportsShouldProcess = $true, DefaultParameterSetName = "Restore")]
     param (
         [parameter(Mandatory = $true)]
         [Alias("ServerInstance", "SqlServer")]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [PSCredential]$SqlCredential,
         [parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = "Restore")]
         [parameter(Mandatory = $true, ValueFromPipeline = $true, ParameterSetName = "RestorePage")]
@@ -448,7 +448,7 @@ function Restore-DbaDatabase {
                 }
             }
             if ('' -ne $StandbyDirectory) {
-                if (!(Test-DbaSqlPath -Path $StandbyDirectory -SqlInstance $RestoreInstance)) {
+                if (!(Test-SqlPath -Path $StandbyDirectory -SqlInstance $RestoreInstance)) {
                     Stop-Function -Message "$SqlSever cannot see the specified Standby Directory $StandbyDirectory" -Target $SqlInstance
                     return
                 }
@@ -483,7 +483,7 @@ function Restore-DbaDatabase {
         $isLocal = [dbavalidate]::IsLocalHost($SqlInstance.ComputerName)
 
         if ($useDestinationDefaultDirectories) {
-            $DefaultPath = (Get-DbaDefaultPath -SqlInstance $RestoreInstance)
+            $DefaultPath = (Get-DefaultPath -SqlInstance $RestoreInstance)
             $DestinationDataDirectory = $DefaultPath.Data
             $DestinationLogDirectory = $DefaultPath.Log
         }
@@ -513,7 +513,7 @@ function Restore-DbaDatabase {
                         #$f = $f | Select-Object *,  @{Name="Type";Expression={"Full"}}
                     }
                     if ("BackupSetGUID" -notin $f.PSobject.Properties.name) {
-                        #This line until Get-DbaBackupHistory gets fixed
+                        #This line until Get-BackupHistory gets fixed
                         #$f = $f | Select-Object *, @{ Name = "BackupSetGUID"; Expression = { $_.BackupSetupID } }
                         #This one once it's sorted:
                         $f = $f | Select-Object *, @{Name = "BackupSetGUID"; Expression = {$_.BackupSetID}}
@@ -531,11 +531,11 @@ function Restore-DbaDatabase {
                     if ($f -is [System.IO.FileSystemInfo]) {
                         $f = $f.fullname
                     }
-                    $BackupHistory += $f | Get-DbaBackupInformation -SqlInstance $RestoreInstance -DirectoryRecurse:$DirectoryRecurse -MaintenanceSolution:$MaintenanceSolutionBackup -IgnoreLogBackup:$IgnoreLogBackup
+                    $BackupHistory += $f | Get-BackupInformation -SqlInstance $RestoreInstance -DirectoryRecurse:$DirectoryRecurse -MaintenanceSolution:$MaintenanceSolutionBackup -IgnoreLogBackup:$IgnoreLogBackup
                 }
             }
             if ($PSCmdlet.ParameterSetName -eq "RestorePage") {
-                if (-not (Test-DbaSqlPath -SqlInstance $RestoreInstance -Path $PageRestoreTailFolder)) {
+                if (-not (Test-SqlPath -SqlInstance $RestoreInstance -Path $PageRestoreTailFolder)) {
                     Stop-Function -Message "Instance $RestoreInstance cannot read $PageRestoreTailFolder, cannot proceed" -Target $PageRestoreTailFolder
                     return
                 }
@@ -607,7 +607,7 @@ function Restore-DbaDatabase {
                 return
             }
 
-            $FilteredBackupHistory = $BackupHistory | Select-DbaBackupInformation -RestoreTime $RestoreTime -IgnoreLogs:$IgnoreLogBackups -ContinuePoints $ContinuePoints
+            $FilteredBackupHistory = $BackupHistory | Select-BackupInformation -RestoreTime $RestoreTime -IgnoreLogs:$IgnoreLogBackups -ContinuePoints $ContinuePoints
 
             if ( Test-Bound -ParameterName SelectBackupInformation) {
                 Write-Message -Message "Setting $SelectBackupInformation to FilteredBackupHistory" -Level Verbose
@@ -618,7 +618,7 @@ function Restore-DbaDatabase {
                 return
             }
 
-            $null = $FilteredBackupHistory | Format-DbaBackupInformation -DataFileDirectory $DestinationDataDirectory -LogFileDirectory $DestinationLogDirectory -DestinationFileStreamDirectory $DestinationFileStreamDirectory -DatabaseFileSuffix $DestinationFileSuffix -DatabaseFilePrefix $DestinationFilePrefix -DatabaseNamePrefix $RestoredDatabaseNamePrefix -ReplaceDatabaseName $DatabaseName -Continue:$Continue -ReplaceDbNameInFile:$ReplaceDbNameInFile -FileMapping $FileMapping
+            $null = $FilteredBackupHistory | Format-BackupInformation -DataFileDirectory $DestinationDataDirectory -LogFileDirectory $DestinationLogDirectory -DestinationFileStreamDirectory $DestinationFileStreamDirectory -DatabaseFileSuffix $DestinationFileSuffix -DatabaseFilePrefix $DestinationFilePrefix -DatabaseNamePrefix $RestoredDatabaseNamePrefix -ReplaceDatabaseName $DatabaseName -Continue:$Continue -ReplaceDbNameInFile:$ReplaceDbNameInFile -FileMapping $FileMapping
 
             if ( Test-Bound -ParameterName FormatBackupInformation) {
                 Set-Variable -Name $FormatBackupInformation -Value $FilteredBackupHistory -Scope Global
@@ -627,7 +627,7 @@ function Restore-DbaDatabase {
                 return
             }
             Write-Message -Level Verbose -Message "VerifyOnly = $VerifyOnly"
-            $null = $FilteredBackupHistory | Test-DbaBackupInformation -SqlInstance $RestoreInstance  -WithReplace:$WithReplace -Continue:$Continue -VerifyOnly:$VerifyOnly
+            $null = $FilteredBackupHistory | Test-BackupInformation -SqlInstance $RestoreInstance  -WithReplace:$WithReplace -Continue:$Continue -VerifyOnly:$VerifyOnly
 
             if ( Test-Bound -ParameterName TestBackupInformation) {
                 Set-Variable -Name $TestBackupInformation -Value $FilteredBackupHistory -Scope Global
@@ -662,17 +662,17 @@ function Restore-DbaDatabase {
             Write-Message -Message "Passing in to restore" -Level Verbose
             if ($PSCmdlet.ParameterSetName -eq "RestorePage" -and $RestoreInstance.Edition -notlike '*Enterprise*') {
                 Write-Message -Message "Taking Tail log backup for page restore for non-Enterprise" -Level Verbose
-                $TailBackup = Backup-DbaDatabase -SqlInstance $RestoreInstance -Database $DatabaseName -Type Log -BackupDirectory $PageRestoreTailFolder -Norecovery -CopyOnly
+                $TailBackup = Backup-Database -SqlInstance $RestoreInstance -Database $DatabaseName -Type Log -BackupDirectory $PageRestoreTailFolder -Norecovery -CopyOnly
             }
-            $FilteredBackupHistory | Where-Object {$_.IsVerified -eq $true} | Invoke-DbaAdvancedRestore -SqlInstance $RestoreInstance -WithReplace:$WithReplace -RestoreTime $RestoreTime -StandbyDirectory $StandbyDirectory -NoRecovery:$NoRecovery -Continue:$Continue -OutputScriptOnly:$OutputScriptOnly -BlockSize $BlockSize -MaxTransferSize $MaxTransferSize -Buffercount $Buffercount -KeepCDC:$KeepCDC -VerifyOnly:$VerifyOnly -PageRestore $PageRestore
+            $FilteredBackupHistory | Where-Object {$_.IsVerified -eq $true} | Invoke-AdvancedRestore -SqlInstance $RestoreInstance -WithReplace:$WithReplace -RestoreTime $RestoreTime -StandbyDirectory $StandbyDirectory -NoRecovery:$NoRecovery -Continue:$Continue -OutputScriptOnly:$OutputScriptOnly -BlockSize $BlockSize -MaxTransferSize $MaxTransferSize -Buffercount $Buffercount -KeepCDC:$KeepCDC -VerifyOnly:$VerifyOnly -PageRestore $PageRestore
             if ($PSCmdlet.ParameterSetName -eq "RestorePage" ) {
                 if ($RestoreInstace.Edition -like '*Enterprise*') {
                     Write-Message -Message "Taking Tail log backup for page restore for Enterprise" -Level Verbose
-                    $TailBackup = Backup-DbaDatabase -SqlInstance $RestoreInstance -Database $DatabaseName -Type Log -BackupDirectory $PageRestoreTailFolder -Norecovery -CopyOnly
+                    $TailBackup = Backup-Database -SqlInstance $RestoreInstance -Database $DatabaseName -Type Log -BackupDirectory $PageRestoreTailFolder -Norecovery -CopyOnly
                 }
                 Write-Message -Message "Restoring Tail log backup for page restore" -Level Verbose
-                $TailBackup | Restore-DbaDatabase -SqlInstance $RestoreInstance -TrustDbBackupHistory -NoRecovery -OutputScriptOnly:$OutputScriptOnly -BlockSize $BlockSize -MaxTransferSize $MaxTransferSize -Buffercount $Buffercount -Continue
-                Restore-DbaDatabase -SqlInstance $RestoreInstance -Recover -Database $DatabaseName -OutputScriptOnly:$OutputScriptOnly
+                $TailBackup | Restore-Database -SqlInstance $RestoreInstance -TrustDbBackupHistory -NoRecovery -OutputScriptOnly:$OutputScriptOnly -BlockSize $BlockSize -MaxTransferSize $MaxTransferSize -Buffercount $Buffercount -Continue
+                Restore-Database -SqlInstance $RestoreInstance -Recover -Database $DatabaseName -OutputScriptOnly:$OutputScriptOnly
             }
 
         }

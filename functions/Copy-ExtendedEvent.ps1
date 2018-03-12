@@ -82,9 +82,9 @@ function Copy-ExtendedEvent {
     [CmdletBinding(DefaultParameterSetName = "Default", SupportsShouldProcess = $true)]
     param (
         [parameter(Mandatory = $true)]
-        [DbaInstanceParameter]$Source,
+        $Source,
         [parameter(Mandatory = $true)]
-        [DbaInstanceParameter]$Destination,
+        $Destination,
         [PSCredential]
         $SourceSqlCredential,
         [PSCredential]

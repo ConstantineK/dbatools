@@ -4,10 +4,10 @@
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     BeforeAll {
-        $null = New-DbaClientAlias -ServerName sql2016 -Alias dbatoolscialias-new -Verbose:$false
+        $null = New-ClientAlias -ServerName sql2016 -Alias dbatoolscialias-new -Verbose:$false
     }
     Context "adds the alias" {
-        $results = Remove-DbaClientAlias -Alias dbatoolscialias-new -Verbose:$false
+        $results = Remove-ClientAlias -Alias dbatoolscialias-new -Verbose:$false
         It "alias is not included in results" {
             $results.AliasName -notcontains 'dbatoolscialias-new' | Should Be $true
         }

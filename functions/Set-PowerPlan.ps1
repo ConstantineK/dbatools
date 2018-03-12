@@ -1,4 +1,4 @@
-function Set-DbaPowerPlan {
+function Set-PowerPlan {
     <#
         .SYNOPSIS
             Sets the SQL Server OS's Power Plan.
@@ -30,20 +30,20 @@ function Set-DbaPowerPlan {
         .NOTES
             Requires: WMI access to servers
 
-            dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-            Copyright (C) 2016 Chrissy LeMaire
+            sqlshellPowerShell module (https://dbatools.io, clemaire@gmail.com)
+
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .LINK
-            https://dbatools.io/Set-DbaPowerPlan
+            https://dbatools.io/Set-PowerPlan
 
         .EXAMPLE
-            Set-DbaPowerPlan -ComputerName sqlserver2014a
+            Set-PowerPlan -ComputerName sqlserver2014a
 
             Sets the Power Plan to High Performance. Skips it if its already set.
 
         .EXAMPLE
-            Set-DbaPowerPlan -ComputerName sqlcluster -CustomPowerPlan 'Maximum Performance'
+            Set-PowerPlan -ComputerName sqlcluster -CustomPowerPlan 'Maximum Performance'
 
             Sets the Power Plan to the custom power plan called "Maximum Performance". Skips it if its already set.
 
@@ -63,7 +63,7 @@ function Set-DbaPowerPlan {
             $PowerPlan = $CustomPowerPlan
         }
 
-        function Set-DbaPowerPlan {
+        function Set-PowerPlan {
             try {
                 Write-Verbose "Testing connection to $server and resolving IP address."
                 $ipaddr = (Test-Connection $server -Count 1 -ErrorAction SilentlyContinue).Ipv4Address | Select-Object -First 1
@@ -127,8 +127,8 @@ function Set-DbaPowerPlan {
     process {
         foreach ($server in $ComputerName) {
             if ($server -match 'Server\=') {
-                Write-Verbose "Matched that value was piped from Test-DbaPowerPlan."
-                # I couldn't properly unwrap the output from  Test-DbaPowerPlan so here goes.
+                Write-Verbose "Matched that value was piped from Test-PowerPlan."
+                # I couldn't properly unwrap the output from  Test-PowerPlan so here goes.
                 $lol = $server.Split("\;")[0]
                 $lol = $lol.TrimEnd("\}")
                 $lol = $lol.TrimStart("\@\{Server")
@@ -148,7 +148,7 @@ function Set-DbaPowerPlan {
                 continue
             }
 
-            $data = Set-DbaPowerPlan $server
+            $data = Set-PowerPlan $server
 
             if ($data.Count -gt 1) {
                 $data.GetEnumerator() | ForEach-Object { $null = $collection.Add($_) }

@@ -1,4 +1,4 @@
-function Get-DbaSqlRegistryRoot {
+function Get-SqlRegistryRoot {
     <#
 .SYNOPSIS
 Uses SQL WMI to find the Registry Root of each SQL Server instance on a computer
@@ -25,11 +25,11 @@ Tags: Configuration, Registry
 License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
 .EXAMPLE
-Get-DbaSqlRegistryRoot
+Get-SqlRegistryRoot
 Gets the registry root for all instances on localhost
 
 .EXAMPLE
-Get-DbaSqlRegistryRoot -ComputerName server1
+Get-SqlRegistryRoot -ComputerName server1
 
 Gets the registry root for all instances on server1
 

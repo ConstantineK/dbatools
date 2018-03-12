@@ -6,10 +6,10 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 
     BeforeAll {
         # Create the server object
-        $server = Connect-DbaInstance -SqlInstance $script:instance2
+        $server = Connect-Instance -SqlInstance $script:instance2
 
         # Get the default data directory to create the additional data file
-        $defaultdata = (Get-DbaDefaultPath -SqlInstance $server).Data
+        $defaultdata = (Get-DefaultPath -SqlInstance $server).Data
 
         # Set the database name
         $dbname = "dbatoolscsi_balance"
@@ -21,7 +21,7 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         $server.Databases.Refresh()
 
         # retrieve the database object for later
-        $db = Get-DbaDatabase -SqlInstance $server -Database $dbname
+        $db = Get-Database -SqlInstance $server -Database $dbname
 
         # Create the tables
         $db.Query("CREATE TABLE table1 (ID1 INT IDENTITY PRIMARY KEY, Name1 varchar(100))")
@@ -46,12 +46,12 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
 
     }
     AfterAll {
-        Remove-DbaDatabase -SqlInstance $server -Database $dbname -Confirm:$false
+        Remove-Database -SqlInstance $server -Database $dbname -Confirm:$false
     }
 
     Context "Data is balanced among data files" {
 
-        $results = Invoke-DbaBalanceDataFiles -SqlInstance $server -Database $dbname -RebuildOffline -Force
+        $results = Invoke-BalanceDataFiles -SqlInstance $server -Database $dbname -RebuildOffline -Force
 
         It "Result returns success" {
             $results.Success | Should -Be $true

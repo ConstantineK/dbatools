@@ -134,7 +134,7 @@ function Expand-TLogResponsibly {
     param (
         [parameter(Position = 1, Mandatory = $true)]
         [Alias("ServerInstance", "SqlServer")]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [parameter(Position = 3)]
         [PSCredential]$SqlCredential,
         [Alias("Databases")]

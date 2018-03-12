@@ -5,17 +5,17 @@
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "Can create a database certificate" {
         BeforeAll {
-            $masterkey = New-DbaDatabaseMasterKey -SqlInstance $script:instance1 -Database tempdb -Password $(ConvertTo-SecureString -String "GoodPass1234!" -AsPlainText -Force) -Confirm:$false
+            $masterkey = New-DatabaseMasterKey -SqlInstance $script:instance1 -Database tempdb -Password $(ConvertTo-SecureString -String "GoodPass1234!" -AsPlainText -Force) -Confirm:$false
         }
         AfterAll {
-            $null = $masterkey | Remove-DbaDatabaseMasterKey -Confirm:$false
+            $null = $masterkey | Remove-DatabaseMasterKey -Confirm:$false
         }
 
         $password = ConvertTo-SecureString -AsPlainText "GoodPass1234!!" -force
-        $cert = New-DbaDbCertificate -SqlInstance $script:instance1 -Database tempdb
-        $backup = Backup-DbaDbCertificate -SqlInstance $script:instance1 -Database tempdb -EncryptionPassword $password
-        $null = Remove-DbaDbCertificate -SqlInstance $script:instance1 -Certificate $cert.Name -Database tempdb -Confirm:$false
-        $results = Restore-DbaDbCertificate -SqlInstance $script:instance1 -Path $backup.ExportPath -Password $password -Database tempdb
+        $cert = New-DbCertificate -SqlInstance $script:instance1 -Database tempdb
+        $backup = Backup-DbCertificate -SqlInstance $script:instance1 -Database tempdb -EncryptionPassword $password
+        $null = Remove-DbCertificate -SqlInstance $script:instance1 -Certificate $cert.Name -Database tempdb -Confirm:$false
+        $results = Restore-DbCertificate -SqlInstance $script:instance1 -Path $backup.ExportPath -Password $password -Database tempdb
 
         It "restores the db cert" {
             $results.Parent.Name -eq 'tempdb'
@@ -23,6 +23,6 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
             $results.PrivateKeyEncryptionType -eq "Password"
         }
 
-        $results | Remove-DbaDbCertificate -Confirm:$false
+        $results | Remove-DbCertificate -Confirm:$false
     }
 }

@@ -1,4 +1,4 @@
-function Reset-DbaAdmin {
+function Reset-Admin {
     <#
         .SYNOPSIS
             This function allows administrators to regain access to SQL Servers in the event that passwords or access was lost.
@@ -8,7 +8,7 @@ function Reset-DbaAdmin {
         .DESCRIPTION
             This function allows administrators to regain access to local or remote SQL Servers by either resetting the sa password, adding the sysadmin role to existing login, or adding a new login (SQL or Windows) and granting it sysadmin privileges.
 
-            This is accomplished by stopping the SQL services or SQL Clustered Resource Group, then restarting SQL via the command-line using the /mReset-DbaAdmin parameter which starts the server in Single-User mode and only allows this script to connect.
+            This is accomplished by stopping the SQL services or SQL Clustered Resource Group, then restarting SQL via the command-line using the /mReset-Admin parameter which starts the server in Single-User mode and only allows this script to connect.
 
             Once the service is restarted, the following tasks are performed:
             - Login is added if it doesn't exist
@@ -49,12 +49,12 @@ function Reset-DbaAdmin {
             Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
         .EXAMPLE
-            Reset-DbaAdmin -SqlInstance sqlcluster
+            Reset-Admin -SqlInstance sqlcluster
 
             Prompts for password, then resets the "sa" account password on sqlcluster.
 
         .EXAMPLE
-            Reset-DbaAdmin -SqlInstance sqlserver\sqlexpress -Login ad\administrator
+            Reset-Admin -SqlInstance sqlserver\sqlexpress -Login ad\administrator
 
             Prompts user to confirm that they understand the SQL Service will be restarted.
 
@@ -62,7 +62,7 @@ function Reset-DbaAdmin {
             If the account already exists, it will be added to the sysadmin role.
 
         .EXAMPLE
-            Reset-DbaAdmin -SqlInstance sqlserver\sqlexpress -Login sqladmin -Force
+            Reset-Admin -SqlInstance sqlserver\sqlexpress -Login sqladmin -Force
 
             Skips restart confirmation, prompts for password, then adds a SQL Login "sqladmin" with sysadmin privileges.
             If the account already exists, it will be added to the sysadmin role and the password will be reset.
@@ -73,17 +73,17 @@ function Reset-DbaAdmin {
             Requires: Admin access to server (not SQL Services),
             Remoting must be enabled and accessible if $SqlInstance is not local
 
-            dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-            Copyright (C) 2016 Chrissy LeMaire
+            sqlshellPowerShell module (https://dbatools.io, clemaire@gmail.com)
+
 
         .LINK
-            https://dbatools.io/Reset-DbaAdmin
+            https://dbatools.io/Reset-Admin
 #>
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = "High")]
     param (
         [Parameter(Mandatory = $true)]
         [Alias("ServerInstance", "SqlServer")]
-        [DbaInstanceParameter]
+
         $SqlInstance,
         [string]$Login = "sa",
         [switch]$Force,
@@ -91,7 +91,7 @@ function Reset-DbaAdmin {
     )
 
     begin {
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Reset-SqlAdmin
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Reset-SqlAdmin
 
         #region Utility functions
         function ConvertTo-PlainText {
@@ -114,19 +114,19 @@ function Reset-DbaAdmin {
         function Invoke-ResetSqlCmd {
             <#
                 .SYNOPSIS
-                    Internal function. Executes a SQL statement against specified computer, and uses "Reset-DbaAdmin" as the Application Name.
+                    Internal function. Executes a SQL statement against specified computer, and uses "Reset-Admin" as the Application Name.
             #>
             [OutputType([System.Boolean])]
             [CmdletBinding()]
             param (
                 [Parameter(Mandatory = $true)]
                 [Alias("ServerInstance", "SqlServer")]
-                [DbaInstanceParameter]
+
                 $SqlInstance,
                 [string]$sql
             )
             try {
-                $connstring = "Data Source=$SqlInstance;Integrated Security=True;Connect Timeout=2;Application Name=Reset-DbaAdmin"
+                $connstring = "Data Source=$SqlInstance;Integrated Security=True;Connect Timeout=2;Application Name=Reset-Admin"
                 $conn = New-Object System.Data.SqlClient.SqlConnection $connstring
                 $conn.Open()
                 $cmd = New-Object system.data.sqlclient.sqlcommand($null, $conn)
@@ -152,7 +152,7 @@ function Reset-DbaAdmin {
         $baseaddress = $SqlInstance.ComputerName
 
         # Before we continue, we need confirmation.
-        if ($pscmdlet.ShouldProcess($baseaddress, "Reset-DbaAdmin (SQL Server instance $SqlInstance will restart)")) {
+        if ($pscmdlet.ShouldProcess($baseaddress, "Reset-Admin (SQL Server instance $SqlInstance will restart)")) {
             # Get hostname
 
             if ($baseaddress -eq "." -or $baseaddress -eq $env:COMPUTERNAME -or $baseaddress -eq "localhost") {
@@ -288,7 +288,7 @@ function Reset-DbaAdmin {
             }
 
             if ($null -ne $checkcluster) {
-                $clusterResource = Get-DbaCmObject -ClassName "MSCluster_Resource" -Namespace "root\mscluster" -ComputerName $hostname |
+                $clusterResource = Get-CmObject -ClassName "MSCluster_Resource" -Namespace "root\mscluster" -ComputerName $hostname |
                     Where-Object { $_.Name.StartsWith("SQL Server") -and $_.OwnerGroup -eq "SQL Server ($instance)" }
             }
 
@@ -317,17 +317,17 @@ function Reset-DbaAdmin {
                 }
             }
 
-            # /mReset-DbaAdmin Starts an instance of SQL Server in single-user mode and only allows this script to connect.
+            # /mReset-Admin Starts an instance of SQL Server in single-user mode and only allows this script to connect.
             Write-Message -Level Verbose -Message "Starting SQL Service from command line."
             try {
                 if ($hostname -eq $env:COMPUTERNAME) {
-                    $netstart = net start ""$displayname"" /mReset-DbaAdmin 2>&1
+                    $netstart = net start ""$displayname"" /mReset-Admin 2>&1
                     if ("$netstart" -notmatch "success") {
                         throw
                     }
                 }
                 else {
-                    $netstart = Invoke-Command -ErrorAction Stop -Session $session -ArgumentList $displayname -ScriptBlock { net start ""$args"" /mReset-DbaAdmin } 2>&1
+                    $netstart = Invoke-Command -ErrorAction Stop -Session $session -ArgumentList $displayname -ScriptBlock { net start ""$args"" /mReset-Admin } 2>&1
                     foreach ($line in $netstart) {
                         if ($line.length -gt 0) { Write-Message -Level Verbose -Message $line }
                     }

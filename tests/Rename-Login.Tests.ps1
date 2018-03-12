@@ -8,19 +8,19 @@ Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
         $renamed = "dbatoolsci_renamelogin2"
         $password = 'MyV3ry$ecur3P@ssw0rd'
         $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
-        $newlogin = New-DbaLogin -SqlInstance $script:instance1 -Login $login -Password $securePassword
+        $newlogin = New-Login -SqlInstance $script:instance1 -Login $login -Password $securePassword
     }
     AfterAll {
-        Stop-DbaProcess -SqlInstance $script:instance1 -Login $renamed
-        (Get-Dbalogin -SqlInstance $script:instance1 -Login $renamed).Drop()
+        Stop-Process -SqlInstance $script:instance1 -Login $renamed
+        (Get-login -SqlInstance $script:instance1 -Login $renamed).Drop()
     }
 
     It "renames the login" {
-        $results = Rename-DbaLogin -SqlInstance $script:instance1 -Login $login -NewLogin $renamed
+        $results = Rename-Login -SqlInstance $script:instance1 -Login $login -NewLogin $renamed
         $results.Status -eq "Successful"
         $results.OldLogin = $login
         $results.NewLogin = $renamed
-        $login1 = Get-Dbalogin -SqlInstance $script:instance1 -login $renamed
+        $login1 = Get-login -SqlInstance $script:instance1 -login $renamed
         $null -ne $login1
     }
 }

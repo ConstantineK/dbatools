@@ -2,9 +2,9 @@
 
 . "$PSScriptRoot\constants.ps1"
 
-Describe "$CommandName Unit Tests" -Tag UnitTests, Get-DbaLogin {
+Describe "$CommandName Unit Tests" -Tag UnitTests, Get-Login {
     Context "$Command Name Input" {
-        $Params = (Get-Command Get-DbaLogin).Parameters
+        $Params = (Get-Command Get-Login).Parameters
         It "Should have a mandatory parameter SQLInstance" {
             $Params['SQLInstance'].Attributes.Mandatory | Should be $true
         }
@@ -55,14 +55,14 @@ Describe "$CommandName Unit Tests" -Tag UnitTests, Get-DbaLogin {
 
 Describe "$commandname Integration Tests" -Tags "IntegrationTests" {
     Context "Does sql instance have a SA account" {
-        $results = Get-DbaLogin -SqlInstance $script:instance1 -Login sa
+        $results = Get-Login -SqlInstance $script:instance1 -Login sa
         It "Should report that one account named SA exists" {
             $results.Count | Should Be 1
         }
     }
 
     Context "Check that SA account is enabled" {
-        $results = Get-DbaLogin -SqlInstance $script:instance1 -Login sa
+        $results = Get-Login -SqlInstance $script:instance1 -Login sa
         It "Should say the SA account is disabled FALSE" {
             $results.IsDisabled | Should Be "False"
         }
