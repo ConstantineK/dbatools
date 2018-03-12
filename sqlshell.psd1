@@ -1,6 +1,6 @@
 @{
     RootModule                = 'sqlshell.psm1'
-    ModuleVersion             = '1.0.000'
+    ModuleVersion             = '0.1.000'
     GUID                      = 'e9fc9e6c-4f35-4a85-9372-92df6125c6f5'
     Author                    = 'Constantine Kokkinos'
     CompanyName               = 'sqlshell'
