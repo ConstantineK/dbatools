@@ -1,35 +1,39 @@
 function Invoke-ManagedComputerCommand {
-    <#
-        .SYNOPSIS
-            Runs wmi commands against a target system.
+  <#
+    .SYNOPSIS
+        Runs wmi commands against a target system.
 
-        .DESCRIPTION
-            Runs wmi commands against a target system.
-            Either directly or over PowerShell remoting.
+    .DESCRIPTION
+        Runs wmi commands against a target system.
+        Either directly or over PowerShell remoting.
 
-        .PARAMETER ComputerName
-            The target to run against. Must be resolvable.
+    .PARAMETER ComputerName
+        The target to run against. Must be resolvable.
 
-        .PARAMETER Credential
-            Credentials to use when using PowerShell remoting.
+    .PARAMETER Credential
+        Credentials to use when using PowerShell remoting.
 
-        .PARAMETER ScriptBlock
-            The scriptblock to execute.
-            Use $wmi to access the smo wmi object.
-            Must not include a param block!
+    .PARAMETER ScriptBlock
+        The scriptblock to execute.
+        Use $wmi to access the smo wmi object.
+        Must not include a param block!
 
-        .PARAMETER ArgumentList
-            The arguments to pass to your scriptblock.
-            Access them within the scriptblock using the automatic variable $args
+    .PARAMETER ArgumentList
+        The arguments to pass to your scriptblock.
+        Access them within the scriptblock using the automatic variable $args
 
-        .PARAMETER EnableException
-            Left in for legacy reasons. This command will throw no matter what
-    #>
+    .PARAMETER EnableException
+        Left in for legacy reasons. This command will throw no matter what
+
+    .NOTES
+      License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
+
+  #>
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
         [Alias("Server")]
-        [dbainstanceparameter]
+
         $ComputerName,
 
         [PSCredential]
@@ -51,7 +55,7 @@ function Invoke-ManagedComputerCommand {
 
     $null = Test-ElevationRequirement -ComputerName $computer -EnableException $true
 
-    $resolved = Resolve-DbaNetworkName -ComputerName $computer
+    $resolved = Resolve-NetworkName -ComputerName $computer
     $ipaddr = $resolved.IpAddress
     $ArgumentList += $ipaddr
 

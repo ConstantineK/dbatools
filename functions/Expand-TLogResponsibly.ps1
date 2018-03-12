@@ -1,4 +1,4 @@
-function Expand-DbaTLogResponsibly {
+function Expand-TLogResponsibly {
     <#
         .SYNOPSIS
             This command will help you to automatically grow your transaction log  file in a responsible way (preventing the generation of too many VLFs).
@@ -97,42 +97,36 @@ function Expand-DbaTLogResponsibly {
 
         .NOTES
             Tags: Storage, Backup
-            This script uses Get-DbaDiskSpace dbatools command to get the TLog's drive free space
+            This script uses Get-DiskSpace sqlshellcommand to get the TLog's drive free space
 
             Author: Claudio Silva (@ClaudioESSilva)
             Requires: ALTER DATABASE permission
             Limitations: Freespace cannot be validated on the directory where the log file resides in SQL Server 2005.
 
-            
-            Copyright (C) 2016 Chrissy LeMaire
-            
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
-        .LINK
-            https://dbatools.io/Expand-DbaTLogResponsibly
-
         .EXAMPLE
-            Expand-DbaTLogResponsibly -SqlInstance sqlcluster -Database db1 -TargetLogSizeMB 50000
+            Expand-TLogResponsibly -SqlInstance sqlcluster -Database db1 -TargetLogSizeMB 50000
 
             Grows the transaction log for database db1 on sqlcluster to 50000 MB and calculates the increment size.
 
         .EXAMPLE
-            Expand-DbaTLogResponsibly -SqlInstance sqlcluster -Database db1, db2 -TargetLogSizeMB 10000 -IncrementSizeMB 200
+            Expand-TLogResponsibly -SqlInstance sqlcluster -Database db1, db2 -TargetLogSizeMB 10000 -IncrementSizeMB 200
 
             Grows the transaction logs for databases db1 and db2 on sqlcluster to 1000MB and sets the growth increment to 200MB.
 
         .EXAMPLE
-            Expand-DbaTLogResponsibly -SqlInstance sqlcluster -Database db1 -TargetLogSizeMB 10000 -LogFileId 9
+            Expand-TLogResponsibly -SqlInstance sqlcluster -Database db1 -TargetLogSizeMB 10000 -LogFileId 9
 
             Grows the transaction log file  with FileId 9 of the db1 database on sqlcluster instance to 10000MB.
 
         .EXAMPLE
-            Expand-DbaTLogResponsibly -SqlInstance sqlcluster -Database (Get-Content D:\DBs.txt) -TargetLogSizeMB 50000
+            Expand-TLogResponsibly -SqlInstance sqlcluster -Database (Get-Content D:\DBs.txt) -TargetLogSizeMB 50000
 
             Grows the transaction log of the databases specified in the file 'D:\DBs.txt' on sqlcluster instance to 50000MB.
 
         .EXAMPLE
-            Expand-DbaTLogResponsibly -SqlInstance SqlInstance -Database db1,db2 -TargetLogSizeMB 100 -IncrementSizeMB 10 -ShrinkLogFile -ShrinkSizeMB 10 -BackupDirectory R:\MSSQL\Backup
+            Expand-TLogResponsibly -SqlInstance SqlInstance -Database db1,db2 -TargetLogSizeMB 100 -IncrementSizeMB 10 -ShrinkLogFile -ShrinkSizeMB 10 -BackupDirectory R:\MSSQL\Backup
 
             Grows the transaction logs for databases db1 and db2 on SQL server SQLInstance to 100MB, sets the incremental growth to 10MB, shrinks the transaction log to 10MB and uses the directory R:\MSSQL\Backup for the required backups.
     #>
@@ -191,7 +185,7 @@ function Expand-DbaTLogResponsibly {
                 $backupdirectory = $server.Settings.BackupDirectory
             }
 
-            $pathexists = Test-DbaSqlPath -SqlInstance $server -Path $backupdirectory
+            $pathexists = Test-SqlPath -SqlInstance $server -Path $backupdirectory
 
             if ($pathexists -eq $false) {
                 Stop-Function -Message "Backup directory does not exist."
@@ -251,7 +245,7 @@ function Expand-DbaTLogResponsibly {
                     $currentSizeMB = $currentSize / 1024
 
                     #Get the number of VLFs
-                    $initialVLFCount = Test-DbaDbVirtualLogFile -SqlInstance $server -Database $db
+                    $initialVLFCount = Test-DbVirtualLogFile -SqlInstance $server -Database $db
 
                     Write-Message -Level Verbose -Message "$step - Log file current size: $([System.Math]::Round($($currentSize/1024.0), 2)) MB "
                     [long]$requiredSpace = ($TargetLogSizeKB - $currentSize)
@@ -260,7 +254,7 @@ function Expand-DbaTLogResponsibly {
 
                     [long]$TotalTLogFreeDiskSpaceKB = 0
                     Write-Message -Level Verbose -Message "Get TLog drive free space"
-                    [object]$AllDrivesFreeDiskSpace = Get-DbaDiskSpace -ComputerName $sourcenetbios | Select-Object Name, SizeInKB
+                    [object]$AllDrivesFreeDiskSpace = Get-DiskSpace -ComputerName $sourcenetbios | Select-Object Name, SizeInKB
 
                     #Verify path using Split-Path on $logfile.FileName in backwards. This way we will catch the LUNs. Example: "K:\Log01" as LUN name. Need to add final backslash if not there
                     $DrivePath = Split-Path $logfile.FileName -parent
@@ -336,7 +330,7 @@ function Expand-DbaTLogResponsibly {
                                 }
 
                                 if (($IncrementSizeMB % 4096) -eq 0) {
-                                    Write-Message -Level Verbose -Message "Your instance version is below SQL 2012, remember the known BUG mentioned on HELP. `r`nUse Get-Help Expand-DbaTLogFileResponsibly to read help`r`nUse a different value for incremental size.`r`n"
+                                    Write-Message -Level Verbose -Message "Your instance version is below SQL 2012, remember the known BUG mentioned on HELP. `r`nUse Get-Help Expand-TLogFileResponsibly to read help`r`nUse a different value for incremental size.`r`n"
                                     return
                                 }
                             }
@@ -487,7 +481,7 @@ function Expand-DbaTLogResponsibly {
                 }
 
                 #Get the number of VLFs
-                $currentVLFCount = Test-DbaDbVirtualLogFile -SqlInstance $server -Database $db
+                $currentVLFCount = Test-DbVirtualLogFile -SqlInstance $server -Database $db
 
                 [pscustomobject]@{
                     ComputerName    = $server.NetName
@@ -511,6 +505,6 @@ function Expand-DbaTLogResponsibly {
 
     end {
         Write-Message -Level Verbose -Message "Process finished $((Get-Date) - ($initialTime))"
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -Alias Expand-SqlTLogResponsibly
+        Test-Deprecation -DeprecatedOn "1.0.0" -Alias Expand-SqlTLogResponsibly
     }
 }

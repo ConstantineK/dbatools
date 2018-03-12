@@ -1,31 +1,28 @@
-function Get-DbaDbPhysicalFile {
-    <#
+function Get-DbPhysicalFile {
+  <#
     .SYNOPSIS
-    Gets raw information about physical files linked to databases
+      Gets raw information about physical files linked to databases
 
     .DESCRIPTION
-    Fastest way to fetch just the paths of the physical files for every database on the instance, also for offline databases.
-    Incidentally, it also fetches the paths for MMO and FS filegroups.
-    This is partly already in Get-DbaDatabaseFile, but this internal needs to stay lean and fast, as it's heavily used in top-level functions
+      Fastest way to fetch just the paths of the physical files for every database on the instance, also for offline databases.
+      Incidentally, it also fetches the paths for MMO and FS filegroups.
+      This is partly already in Get-DatabaseFile, but this internal needs to stay lean and fast, as it's heavily used in top-level functions
 
     .PARAMETER SqlInstance
-    SMO object representing the SQL Server to connect to.
+      SMO object representing the SQL Server to connect to.
 
     .EXAMPLE
-    Get-DbaDbPhysicalFile -SqlInstance server1\instance2
+      Get-DbPhysicalFile -SqlInstance server1\instance2
 
     .NOTES
-        Author: Simone Bizzotto
-
-        dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-        Copyright (C) 2016 Chrissy LeMaire
-        License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
-    #>
+      Author: Simone Bizzotto
+      License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
+  #>
     [CmdletBinding()]
     param(
         [parameter(Mandatory = $true)]
         [Alias("ServerInstance", "SqlServer")]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [Alias("Credential")]
         [PSCredential]
         $SqlCredential

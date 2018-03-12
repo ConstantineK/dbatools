@@ -1,5 +1,5 @@
 #ValidationTags#Messaging,FlowControl,Pipeline,CodeStyle#
-function Find-DbaBackup {
+function Find-Backup {
     <#
         .SYNOPSIS
             Finds SQL Server backups on disk.
@@ -43,21 +43,15 @@ function Find-DbaBackup {
         .NOTES
             Tags: Storage, DisasterRecovery, Backup
             Author: Chris Sommer, @cjsommer, www.cjsommer.com
-
-            dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-            Copyright (C) 2016 Chrissy LeMaire
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
-        .LINK
-            https://dbatools.io/Find-DbaBackup
-
         .EXAMPLE
-            Find-DbaBackup -Path 'C:\MSSQL\SQL Backup\' -BackupFileExtension trn -RetentionPeriod 48h
+            Find-Backup -Path 'C:\MSSQL\SQL Backup\' -BackupFileExtension trn -RetentionPeriod 48h
 
             '*.trn' files in 'C:\MSSQL\SQL Backup\' and all subdirectories that are more than 48 hours old will be included.
 
         .EXAMPLE
-            Find-DbaBackup -Path 'C:\MSSQL\Backup\' -BackupFileExtension bak -RetentionPeriod 7d -CheckArchiveBit
+            Find-Backup -Path 'C:\MSSQL\Backup\' -BackupFileExtension bak -RetentionPeriod 7d -CheckArchiveBit
 
             '*.bak' files in 'C:\MSSQL\Backup\' and all subdirectories that are more than 7 days old will be included, but only if the files have been backed up to another location as verified by checking the Archive bit.
 

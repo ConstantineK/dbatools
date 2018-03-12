@@ -1,4 +1,4 @@
-function Copy-DbaLogin {
+function Copy-Login {
     <#
         .SYNOPSIS
             Migrates logins from source to destination SQL Servers. Supports SQL Server versions 2000 and newer.
@@ -57,7 +57,7 @@ function Copy-DbaLogin {
             Takes the parameters required from a Login object that has been piped into the command
 
         .PARAMETER LoginRenameHashtable
-            Pass a hash table into this parameter to be passed into Rename-DbaLogin to update the Login and mappings after the Login is completed.
+            Pass a hash table into this parameter to be passed into Rename-Login to update the Login and mappings after the Login is completed.
 
         .PARAMETER KillActiveConnection
             If this switch and -Force are enabled, all active connections and sessions on Destination will be killed.
@@ -83,48 +83,43 @@ function Copy-DbaLogin {
             Author: Chrissy LeMaire (@cl), netnerds.net
             Requires: sysadmin access on SQL Servers
 
-            
-            
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
-        .LINK
-            https://dbatools.io/Copy-DbaLogin
-
         .EXAMPLE
-            Copy-DbaLogin -Source sqlserver2014a -Destination sqlcluster -Force
+            Copy-Login -Source sqlserver2014a -Destination sqlcluster -Force
 
             Copies all logins from Source Destination. If a SQL Login on Source exists on the Destination, the Login on Destination will be dropped and recreated.
 
             If active connections are found for a login, the copy of that Login will fail as it cannot be dropped.
 
         .EXAMPLE
-            Copy-DbaLogin -Source sqlserver2014a -Destination sqlcluster -Force -KillActiveConnection
+            Copy-Login -Source sqlserver2014a -Destination sqlcluster -Force -KillActiveConnection
 
             Copies all logins from Source Destination. If a SQL Login on Source exists on the Destination, the Login on Destination will be dropped and recreated.
 
             If any active connections are found they will be killed.
 
         .EXAMPLE
-            Copy-DbaLogin -Source sqlserver2014a -Destination sqlcluster -Exclude realcajun -SourceSqlCredential $scred -DestinationSqlCredential $dcred
+            Copy-Login -Source sqlserver2014a -Destination sqlcluster -Exclude realcajun -SourceSqlCredential $scred -DestinationSqlCredential $dcred
 
             Copies all Logins from Source to Destination except for realcajun using SQL Authentication to connect to both instances.
 
             If a Login already exists on the destination, it will not be migrated.
 
         .EXAMPLE
-            Copy-DbaLogin -Source sqlserver2014a -Destination sqlcluster -Login realcajun, netnerds -force
+            Copy-Login -Source sqlserver2014a -Destination sqlcluster -Login realcajun, netnerds -force
 
             Copies ONLY Logins netnerds and realcajun. If Login realcajun or netnerds exists on Destination, the existing Login(s) will be dropped and recreated.
 
         .EXAMPLE
-            Copy-DbaLogin -Source sqlserver2014a -Destination sqlcluster -SyncOnly
+            Copy-Login -Source sqlserver2014a -Destination sqlcluster -SyncOnly
 
             Syncs only SQL Server login permissions, roles, etc. Does not add or drop logins or users.
 
             If a matching Login does not exist on Destination, the Login will be skipped.
 
         .EXAMPLE
-            Copy-DbaLogin -LoginRenameHashtable @{ "OldUser" ="newlogin" } -Source $Sql01 -Destination Localhost -SourceSqlCredential $sqlcred
+            Copy-Login -LoginRenameHashtable @{ "OldUser" ="newlogin" } -Source $Sql01 -Destination Localhost -SourceSqlCredential $sqlcred
 
             Copies OldUser and then renames it to newlogin.
     #>
@@ -476,7 +471,7 @@ function Copy-DbaLogin {
 
                     if ($Pscmdlet.ShouldProcess($destination, "Renaming SQL Login $userName to $NewLogin")) {
                         try {
-                            Rename-DbaLogin -SqlInstance $destServer -Login $userName -NewLogin $NewLogin
+                            Rename-Login -SqlInstance $destServer -Login $userName -NewLogin $NewLogin
 
                             $copyLoginStatus.DestinationLogin = $NewLogin
                             $copyLoginStatus.Status = "Successful"
@@ -525,12 +520,12 @@ function Copy-DbaLogin {
         }
 
         if ($SyncOnly) {
-            Sync-DbaSqlLoginPermission -Source $sourceServer -Destination $destServer -Login $Login -ExcludeLogin $ExcludeLogin
+            Sync-SqlLoginPermission -Source $sourceServer -Destination $destServer -Login $Login -ExcludeLogin $ExcludeLogin
             return
         }
 
         if ($OutFile) {
-            Export-DbaLogin -SqlInstance $sourceServer -FilePath $OutFile -Login $Login -ExcludeLogin $ExcludeLogin
+            Export-Login -SqlInstance $sourceServer -FilePath $OutFile -Login $Login -ExcludeLogin $ExcludeLogin
             return
         }
 
@@ -554,6 +549,6 @@ function Copy-DbaLogin {
         }
     }
     end {
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlLogin
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlLogin
     }
 }

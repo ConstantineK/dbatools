@@ -1,14 +1,12 @@
 #ValidationTags#FlowControl,Pipeline#
-function Find-DbaOrphanedFile {
+function Find-OrphanedFile {
     <#
         .SYNOPSIS
-            Find-DbaOrphanedFile finds orphaned database files. Orphaned database files are files not associated with any attached database.
+            Find-OrphanedFile finds orphaned database files. Orphaned database files are files not associated with any attached database.
 
         .DESCRIPTION
             This command searches all directories associated with SQL database files for database files that are not currently in use by the SQL Server instance.
-
             By default, it looks for orphaned .mdf, .ldf and .ndf files in the root\data directory, the default data path, the default log path, the system paths and any directory in use by any attached directory.
-
             You can specify additional filetypes using the -FileType parameter, and additional paths to search using the -Path parameter.
 
         .PARAMETER SqlInstance
@@ -16,11 +14,8 @@ function Find-DbaOrphanedFile {
 
         .PARAMETER SqlCredential
             Allows you to login to servers using SQL Logins instead of Windows Authentication (AKA Integrated or Trusted). To use:
-
             $cred = Get-Credential, then pass this $cred to the -SqlCredential parameter.
-
             Windows Authentication will be used if SqlCredential is not specified. SQL Server does not accept Windows credentials being passed as credentials.
-
             To connect as a different Windows user, run PowerShell as that user.
 
         .PARAMETER Path
@@ -41,46 +36,39 @@ function Find-DbaOrphanedFile {
             Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
         .NOTES
-            Tags: DisasterRecovery, Orphan
             Author: Sander Stad (@sqlstad), sqlstad.nl
             Requires: sysadmin access on SQL Servers
-
-            
-            
-            License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
-
             Thanks to Paul Randal's notes on FILESTREAM which can be found at http://www.sqlskills.com/blogs/paul/filestream-directory-structure/
 
-        .LINK
-            https://dbatools.io/Find-DbaOrphanedFile
+            License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .EXAMPLE
-            Find-DbaOrphanedFile -SqlInstance sqlserver2014a
+            Find-OrphanedFile -SqlInstance sqlserver2014a
 
             Connects to sqlserver2014a, authenticating with Windows credentials, and searches for orphaned files. Returns server name, local filename, and unc path to file.
 
         .EXAMPLE
-            Find-DbaOrphanedFile -SqlInstance sqlserver2014a -SqlCredential $cred
+            Find-OrphanedFile -SqlInstance sqlserver2014a -SqlCredential $cred
 
             Connects to sqlserver2014a, authenticating with SQL Server authentication, and searches for orphaned files. Returns server name, local filename, and unc path to file.
 
         .EXAMPLE
-            Find-DbaOrphanedFile -SqlInstance sql2014 -Path 'E:\Dir1', 'E:\Dir2'
+            Find-OrphanedFile -SqlInstance sql2014 -Path 'E:\Dir1', 'E:\Dir2'
 
             Finds the orphaned files in "E:\Dir1" and "E:Dir2" in addition to the default directories.
 
         .EXAMPLE
-            Find-DbaOrphanedFile -SqlInstance sql2014 -LocalOnly
+            Find-OrphanedFile -SqlInstance sql2014 -LocalOnly
 
             Returns only the local filepaths for orphaned files.
 
         .EXAMPLE
-            Find-DbaOrphanedFile -SqlInstance sql2014 -RemoteOnly
+            Find-OrphanedFile -SqlInstance sql2014 -RemoteOnly
 
             Returns only the remote filepath for orphaned files.
 
         .EXAMPLE
-            Find-DbaOrphanedFile -SqlInstance sql2014, sql2016 -FileType fsf, mld
+            Find-OrphanedFile -SqlInstance sql2014, sql2016 -FileType fsf, mld
 
             Finds the orphaned ending with ".fsf" and ".mld" in addition to the default filetypes ".mdf", ".ldf", ".ndf" for both the servers sql2014 and sql2016.
 
@@ -89,7 +77,7 @@ function Find-DbaOrphanedFile {
     Param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [Alias("ServerInstance", "SqlServer")]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [parameter(Mandatory = $false)]
         [object]$SqlCredential,
         [parameter(Mandatory = $false)]

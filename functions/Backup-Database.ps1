@@ -1,4 +1,4 @@
-function Backup-DbaDatabase {
+function Backup-Database {
     <#
             .SYNOPSIS
                 Backup one or more SQL Sever databases from a single SQL Server SqlInstance.
@@ -96,30 +96,27 @@ function Backup-DbaDatabase {
             .NOTES
                 Tags: DisasterRecovery, Backup, Restore
                 Author: Stuart Moore (@napalmgram), stuart-moore.com
-
-                
-                
                 License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
             .EXAMPLE
-                Backup-DbaDatabase -SqlInstance Server1 -Database HR, Finance
+                Backup-Database -SqlInstance Server1 -Database HR, Finance
 
                 This will perform a full database backup on the databases HR and Finance on SQL Server Instance Server1 to Server1's default backup directory.
 
             .EXAMPLE
-                Backup-DbaDatabase -SqlInstance sql2016 -BackupDirectory C:\temp -Database AdventureWorks2014 -Type Full
+                Backup-Database -SqlInstance sql2016 -BackupDirectory C:\temp -Database AdventureWorks2014 -Type Full
 
                 Backs up AdventureWorks2014 to sql2016's C:\temp folder.
 
             .EXAMPLE
-                Backup-DbaDatabase -SqlInstance sql2016 -AzureBaseUrl https://dbatoolsaz.blob.core.windows.net/azbackups/ -AzureCredential dbatoolscred -Type Full -CreateFolder
+                Backup-Database -SqlInstance sql2016 -AzureBaseUrl https://dbatoolsaz.blob.core.windows.net/azbackups/ -AzureCredential dbatoolscred -Type Full -CreateFolder
 
                 Performs a full backup of all databases on the sql2016 instance to their own containers under the https://dbatoolsaz.blob.core.windows.net/azbackups/ container on Azure blog storage using the sql credential "dbatoolscred" registered on the sql2016 instance.
     #>
     [CmdletBinding(DefaultParameterSetName = "Default", SupportsShouldProcess = $true)]
     param (
         [parameter(ParameterSetName = "Pipe", Mandatory = $true)]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [PSCredential]$SqlCredential,
         [Alias("Databases")]
         [object[]]$Database,
@@ -318,7 +315,7 @@ function Backup-DbaDatabase {
 
                 Write-Message -Level Verbose -Message "Single db and filename"
 
-                if (Test-DbaSqlPath -SqlInstance $server -Path (Split-Path $BackupFileName)) {
+                if (Test-SqlPath -SqlInstance $server -Path (Split-Path $BackupFileName)) {
                     $FinalBackupPath += $BackupFileName
                 }
                 else {
@@ -347,7 +344,7 @@ function Backup-DbaDatabase {
                         $Path = $path + $PathDivider + $Database.name
                         Write-Message -Level Verbose -Message "Creating Folder $Path"
                         if ($Pscmdlet.ShouldProcess($server.Name, "Creating folder $path")) {
-                            if (((New-DbaSqlDirectory -SqlInstance $server -SqlCredential $SqlCredential -Path $path).Created -eq $false) -and '' -eq $AzureBaseUrl) {
+                            if (((New-SqlDirectory -SqlInstance $server -SqlCredential $SqlCredential -Path $path).Created -eq $false) -and '' -eq $AzureBaseUrl) {
                                 $failreason = "Cannot create or write to folder $path"
                                 $failures += $failreason
                                 Write-Message -Level Warning -Message "$failreason"
@@ -361,10 +358,10 @@ function Backup-DbaDatabase {
                         $FinalBackupPath += "$path$PathDivider$BackupFileName.$suffix"
                     }
                     <#
-                        The code below attempts to create the directory even when $CreateFolder -- was it supposed to be Test-DbaSqlPath?
+                        The code below attempts to create the directory even when $CreateFolder -- was it supposed to be Test-SqlPath?
                         else
                         {
-                            if ((New-DbaSqlDirectory -SqlInstance $server -SqlCredential $SqlCredential -Path $path).Created -eq $false)
+                            if ((New-SqlDirectory -SqlInstance $server -SqlCredential $SqlCredential -Path $path).Created -eq $false)
                             {
                                 $failreason = "Cannot create or write to folder $path"
                                 $failures += $failreason
@@ -451,7 +448,7 @@ function Backup-DbaDatabase {
                             $HeaderInfo = Get-BackupAncientHistory -SqlInstance $server -Database $dbname
                         }
                         else {
-                            $HeaderInfo = Get-DbaBackupHistory -SqlInstance $server -Database $dbname -Last -IncludeCopyOnly | Sort-Object -Property End -Descending | Select-Object -First 1
+                            $HeaderInfo = Get-BackupHistory -SqlInstance $server -Database $dbname -Last -IncludeCopyOnly | Sort-Object -Property End -Descending | Select-Object -First 1
                         }
                         $Verified = $false
                         if ($Verify) {
@@ -475,7 +472,7 @@ function Backup-DbaDatabase {
                                 LastLsn              = $HeaderInfo.LastLsn
                                 BackupSetId          = $HeaderInfo.BackupSetId
                                 LastRecoveryForkGUID = $HeaderInfo.LastRecoveryForkGUID
-                            } | Restore-DbaDatabase -SqlInstance $server -SqlCredential $SqlCredential -DatabaseName DbaVerifyOnly -VerifyOnly -TrustDbBackupHistory -DestinationFilePrefix DbaVerifyOnly
+                            } | Restore-Database -SqlInstance $server -SqlCredential $SqlCredential -DatabaseName DbaVerifyOnly -VerifyOnly -TrustDbBackupHistory -DestinationFilePrefix DbaVerifyOnly
                             if ($verifiedResult[0] -eq "Verify successful") {
                                 $failures += $verifiedResult[0]
                                 $Verified = $true

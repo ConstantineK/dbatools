@@ -1,4 +1,4 @@
-function Connect-DbaInstance {
+function Connect-Instance {
     <#
     .SYNOPSIS
         Creates a robust SMO SQL Server object.
@@ -6,7 +6,7 @@ function Connect-DbaInstance {
     .DESCRIPTION
         This command is robust because it initializes properties that do not cause enumeration by default. It also supports both Windows and SQL Server authentication methods, and detects which to use based upon the provided credentials.
 
-        By default, this command also sets the connection's ApplicationName property  to "dbatools PowerShell module - dbatools.io - custom connection". If you're doing anything that requires profiling, you can look for this client name.
+        By default, this command also sets the connection's ApplicationName property  to "sqlshell". If you're doing anything that requires profiling, you can look for this client name.
 
         Alternatively, you can pass in whichever client name you'd like using the -ClientName parameter. There are a ton of other parameters for you to explore as well.
 
@@ -40,7 +40,7 @@ function Connect-DbaInstance {
         A string to separate groups of SQL statements being executed. By default, this is "GO".
 
     .PARAMETER ClientName
-        By default, this command sets the client's ApplicationName property to "dbatools PowerShell module - dbatools.io - custom connection" if you're doing anything that requires profiling, you can look for this client name. Using -ClientName allows you to set your own custom client application name.
+        By default, this command sets the client's ApplicationName property to "sqlshell" if you're doing anything that requires profiling, you can look for this client name. Using -ClientName allows you to set your own custom client application name.
 
     .PARAMETER ConnectTimeout
         The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error.
@@ -122,48 +122,42 @@ function Connect-DbaInstance {
         Instead of returning a rich SMO server object, this command will only return a SqlConnection object when setting this switch.
 
     .NOTES
-        dbatools PowerShell module (https://dbatools.io)
-        
-        
         License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
-    .LINK
-        https://dbatools.io/Connect-DbaInstance
-
     .EXAMPLE
-        Connect-DbaInstance -SqlInstance sql2014
+        Connect-Instance -SqlInstance sql2014
 
         Creates an SMO Server object that connects using Windows Authentication
 
     .EXAMPLE
         $wincred = Get-Credential ad\sqladmin
-        Connect-DbaInstance -SqlInstance sql2014 -Credential $wincred
+        Connect-Instance -SqlInstance sql2014 -Credential $wincred
 
         Creates an SMO Server object that connects using alternative Windows credentials
 
     .EXAMPLE
         $sqlcred = Get-Credential sqladmin
-        $server = Connect-DbaInstance -SqlInstance sql2014 -Credential $sqlcred
+        $server = Connect-Instance -SqlInstance sql2014 -Credential $sqlcred
 
         Login to sql2014 as SQL login sqladmin.
 
     .EXAMPLE
-        $server = Connect-DbaInstance -SqlInstance sql2014 -ClientName "my connection"
+        $server = Connect-Instance -SqlInstance sql2014 -ClientName "my connection"
 
         Creates an SMO Server object that connects using Windows Authentication and uses the client name "my connection". So when you open up profiler or use extended events, you can search for "my connection".
 
     .EXAMPLE
-        $server = Connect-DbaInstance -SqlInstance sql2014 -AppendConnectionString "Packet Size=4096;AttachDbFilename=C:\MyFolder\MyDataFile.mdf;User Instance=true;"
+        $server = Connect-Instance -SqlInstance sql2014 -AppendConnectionString "Packet Size=4096;AttachDbFilename=C:\MyFolder\MyDataFile.mdf;User Instance=true;"
 
         Creates an SMO Server object that connects to sql2014 using Windows Authentication, then it sets the packet size (this can also be done via -PacketSize) and other connection attributes.
 
     .EXAMPLE
-        $server = Connect-DbaInstance -SqlInstance sql2014 -NetworkProtocol TcpIp -MultiSubnetFailover
+        $server = Connect-Instance -SqlInstance sql2014 -NetworkProtocol TcpIp -MultiSubnetFailover
 
         Creates an SMO Server object that connects using Windows Authentication that uses TCP/IP and has MultiSubnetFailover enabled.
 
     .EXAMPLE
-        $server = Connect-DbaInstance sql2016 -ApplicationIntent ReadOnly
+        $server = Connect-Instance sql2016 -ApplicationIntent ReadOnly
 
         Connects with ReadOnly ApplicationIntent.
 #>
@@ -179,8 +173,8 @@ function Connect-DbaInstance {
         [ValidateSet('ReadOnly', 'ReadWrite')]
         [string]$ApplicationIntent,
         [string]$BatchSeparator,
-        [string]$ClientName = "dbatools PowerShell module - dbatools.io - custom connection",
-        [int]$ConnectTimeout = ([Sqlcollaborative.Dbatools.Connection.ConnectionHost]::SqlConnectionTimeout),
+        [string]$ClientName = "sqlshell",
+        [int]$ConnectTimeout = 20,
         [switch]$EncryptConnection,
         [string]$FailoverPartner,
         [switch]$IsActiveDirectoryUniversalAuth,
@@ -203,8 +197,8 @@ function Connect-DbaInstance {
         [switch]$SqlConnectionOnly
     )
     begin {
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Connect-DbaSqlServer
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Get-DbaInstance
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Connect-SqlServer
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Get-Instance
 
         $loadedSmoVersion = [AppDomain]::CurrentDomain.GetAssemblies() | Where-Object { $_.Fullname -like "Microsoft.SqlServer.SMO,*" }
 

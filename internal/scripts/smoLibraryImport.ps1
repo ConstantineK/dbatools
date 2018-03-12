@@ -1,9 +1,7 @@
 ﻿$scriptBlock = {
     Param (
         $ModuleRoot,
-
         $DllRoot,
-
         $DoCopy
     )
 

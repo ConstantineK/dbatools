@@ -1,5 +1,5 @@
 #ValidationTags#Messaging#
-function Find-DbaUserObject {
+function Find-UserObject {
     <#
         .SYNOPSIS
             Searches SQL Server to find user-owned objects (ie. not dbo or sa) or for any object owned by a specific user specified by the Pattern parameter.
@@ -35,20 +35,15 @@ function Find-DbaUserObject {
         .NOTES
             Tags: Object
             Author: Stephen Bennett, https://sqlnotesfromtheunderground.wordpress.com/
-            dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-            Copyright (C) 2016 Chrissy LeMaire
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
-        .LINK
-            https://dbatools.io/Find-DbaUserObject
-
         .EXAMPLE
-            Find-DbaUserObject -SqlInstance DEV01 -Pattern ad\stephen
+            Find-UserObject -SqlInstance DEV01 -Pattern ad\stephen
 
             Searches user objects for owner ad\stephen
 
         .EXAMPLE
-            Find-DbaUserObject -SqlInstance DEV01 -Verbose
+            Find-UserObject -SqlInstance DEV01 -Verbose
 
             Shows all user owned (non-sa, non-dbo) objects and verbose output
     #>

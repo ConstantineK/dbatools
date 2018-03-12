@@ -13,8 +13,6 @@ Analysis Server
 Shorten the timeout
 
 .NOTES
-
-
 License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
 .EXAMPLE

@@ -1,5 +1,5 @@
 function Get-XpDirTreeRestoreFile {
-    <#
+  <#
     .SYNOPSIS
         Internal Function to get SQL Server backfiles from a specified folder using xp_dirtree
 
@@ -20,18 +20,21 @@ function Get-XpDirTreeRestoreFile {
         This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
         Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
+    .NOTES
+      License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
+
     .EXAMPLE
         PS C:\> Get-XpDirTreeRestoreFile -Path '\\foo\bar\' -SqlInstance $SqlInstance
 
         Tests whether the instance $SqlInstance has access to the path \\foo\bar\
-#>
+  #>
     [CmdletBinding()]
     param (
         [parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [string]$Path,
         [parameter(Mandatory = $true)]
         [Alias("ServerInstance", "SqlServer")]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [System.Management.Automation.PSCredential]$SqlCredential,
         [bool][Alias('Silent')]$EnableException = $false,
         [switch]$NoRecurse
@@ -49,7 +52,7 @@ function Get-XpDirTreeRestoreFile {
         $Path = $Path + "\"
     }
 
-    if (!(Test-DbaSqlPath -SqlInstance $server -path $path)) {
+    if (!(Test-SqlPath -SqlInstance $server -path $path)) {
         Stop-Function -Message "SqlInstance $SqlInstance cannot access $path" -EnableException $true
     }
     if ($server.VersionMajor -lt 9) {

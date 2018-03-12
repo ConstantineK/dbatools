@@ -1,7 +1,7 @@
-function Copy-DbaLinkedServer {
+function Copy-LinkedServer {
     <#
         .SYNOPSIS
-            Copy-DbaLinkedServer migrates Linked Servers from one SQL Server to another. Linked Server logins and passwords are migrated as well.
+            Copy-LinkedServer migrates Linked Servers from one SQL Server to another. Linked Server logins and passwords are migrated as well.
 
         .DESCRIPTION
             By using password decryption techniques provided by Antti Rantasaari (NetSPI, 2014), this script migrates SQL Server Linked Servers from one server to another, while maintaining username and password.
@@ -62,17 +62,16 @@ function Copy-DbaLinkedServer {
             Limitations: Hasn't been tested thoroughly. Works on Win8.1 and SQL Server 2012 & 2014 so far.
             This just copies the SQL portion. It does not copy files (ie. a local SQLite database, or Microsoft Access DB), nor does it configure ODBC entries.
 
-        .LINK
-            https://dbatools.io/Copy-DbaLinkedServer
+            License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .EXAMPLE
-            Copy-DbaLinkedServer -Source sqlserver2014a -Destination sqlcluster
+            Copy-LinkedServer -Source sqlserver2014a -Destination sqlcluster
 
             Description
             Copies all SQL Server Linked Servers on sqlserver2014a to sqlcluster. If Linked Server exists on destination, it will be skipped.
 
         .EXAMPLE
-            Copy-DbaLinkedServer -Source sqlserver2014a -Destination sqlcluster -LinkedServer SQL2K5,SQL2k -Force
+            Copy-LinkedServer -Source sqlserver2014a -Destination sqlcluster -LinkedServer SQL2K5,SQL2k -Force
 
             Description
             Copies over two SQL Server Linked Servers (SQL2K and SQL2K2) from sqlserver to sqlcluster. If the credential already exists on the destination, it will be dropped.
@@ -263,7 +262,7 @@ function Copy-DbaLinkedServer {
             return $decryptedLogins
         }
 
-        function Copy-DbaLinkedServers {
+        function Copy-LinkedServers {
             param (
                 [string[]]$LinkedServer,
                 [bool]$force
@@ -429,9 +428,9 @@ function Copy-DbaLinkedServer {
         }
 
         # Magic happens here
-        Copy-DbaLinkedServers $LinkedServer -Force:$force
+        Copy-LinkedServers $LinkedServer -Force:$force
     }
     end {
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlLinkedServer
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlLinkedServer
     }
 }

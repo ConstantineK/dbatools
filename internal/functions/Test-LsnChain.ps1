@@ -1,4 +1,4 @@
-function Test-DbaLsnChain {
+function Test-LsnChain {
     <#
     .SYNOPSIS
         Checks that a filtered array from Get-FilteredRestore contains a restorabel chain of LSNs
@@ -10,18 +10,15 @@ function Test-DbaLsnChain {
         LastLSN and FirstLSN in sequential files
 
     .PARAMETER FilteredRestoreFiles
-        This is just an object consisting of the output from Read-DbaBackupHeader. Normally this will have been filtered down to a restorable chain
-        before arriving here. (ie; only 1 anchoring Full backup)
+        This is just an object consisting of the output from Read-BackupHeader. Normally this will have been filtered down to a restorable chain
+        before arriving here. (eg; only 1 anchoring full backup)
 
     .NOTES
         Author: Stuart Moore (@napalmgram), stuart-moore.com
-        Tags:
-        dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-        Copyright (C) 2016 Chrissy LeMaire
         License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .EXAMPLE
-        Test-DbaLsnChain -FilteredRestoreFiles $FilteredFiles
+        Test-LsnChain -FilteredRestoreFiles $FilteredFiles
 
         Checks that the Restore chain in $FilteredFiles is complete and can be fully restored
 

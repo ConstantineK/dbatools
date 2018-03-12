@@ -1,7 +1,7 @@
-function Copy-DbaCredential {
+function Copy-Credential {
     <#
         .SYNOPSIS
-            Copy-DbaCredential migrates SQL Server Credentials from one SQL Server to another while maintaining Credential passwords.
+            Copy-Credential migrates SQL Server Credentials from one SQL Server to another while maintaining Credential passwords.
 
         .DESCRIPTION
             By using password decryption techniques provided by Antti Rantasaari (NetSPI, 2014), this script migrates SQL Server Credentials from one server to another while maintaining username and password.
@@ -66,20 +66,15 @@ function Copy-DbaCredential {
                 - DAC access enabled for local (default)
             Limitations: Hasn't been tested thoroughly. Works on Win8.1 and SQL Server 2012 & 2014 so far.
 
-            
-            
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
-        .LINK
-            https://dbatools.io/Copy-DbaCredential
-
         .EXAMPLE
-            Copy-DbaCredential -Source sqlserver2014a -Destination sqlcluster
+            Copy-Credential -Source sqlserver2014a -Destination sqlcluster
 
             Copies all SQL Server Credentials on sqlserver2014a to sqlcluster. If Credentials exist on destination, they will be skipped.
 
         .EXAMPLE
-            Copy-DbaCredential -Source sqlserver2014a -Destination sqlcluster -CredentialIdentity "PowerShell Proxy Account" -Force
+            Copy-Credential -Source sqlserver2014a -Destination sqlcluster -CredentialIdentity "PowerShell Proxy Account" -Force
 
             Copies over one SQL Server Credential (PowerShell Proxy Account) from sqlserver to sqlcluster. If the Credential already exists on the destination, it will be dropped and recreated.
     #>
@@ -399,6 +394,6 @@ function Copy-DbaCredential {
         Copy-Credential $credentials -force:$force
     }
     end {
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlCredential
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlCredential
     }
 }

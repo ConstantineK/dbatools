@@ -4,10 +4,10 @@ function Set-ServiceStartMode {
         Internal function. Implements the method that changes startup mode of the SQL Server service.
 
         .DESCRIPTION
-        Accepts objects from Get-DbaSqlService and performs a corresponding action.
+        Accepts objects from Get-SqlService and performs a corresponding action.
 
         .PARAMETER ServiceCollection
-        A collection of services from Get-DbaSqlService.
+        A collection of services from Get-SqlService.
 
         .PARAMETER Mode
         Startup mode of the service: Automatic, Manual or Disabled.
@@ -20,18 +20,15 @@ function Set-ServiceStartMode {
 
         .NOTES
         Author: Kirill Kravtsov ( @nvarscar )
-
-        dbatools PowerShell module (https://dbatools.io)
-        Copyright (C) 2017 Chrissy LeMaire
         License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
         .EXAMPLE
-        Get-DbaSqlService -ComputerName sql1 | Set-ServiceStartMode -Mode 'Manual'
+        Get-SqlService -ComputerName sql1 | Set-ServiceStartMode -Mode 'Manual'
 
         Sets all SQL services on sql1 to Manual startup.
 
         .EXAMPLE
-        $services = Get-DbaSqlService -ComputerName sql1
+        $services = Get-SqlService -ComputerName sql1
         Set-ServiceStartMode -ServiceCollection $services -Mode 'Automatic'
 
         Sets all SQL services on sql1 to Automatic startup.
@@ -65,7 +62,7 @@ function Set-ServiceStartMode {
             if ($Pscmdlet.ShouldProcess($Wmi, "Changing the Start Mode to $Mode")) {
                 $x = $Wmi.ChangeStartMode($Mode)
                 if ($x.ReturnValue -ne 0) {
-                    Write-Message -Level Warning -EnableException $EnableException -FunctionName $callerName -Message ("The attempt to $action the service $($job.ServiceName) on $($job.ComputerName) returned the following message: " + (Get-DbaSQLServiceErrorMessage $x.ReturnValue))
+                    Write-Message -Level Warning -EnableException $EnableException -FunctionName $callerName -Message ("The attempt to $action the service $($job.ServiceName) on $($job.ComputerName) returned the following message: " + (Get-SQLServiceErrorMessage $x.ReturnValue))
                 }
             }
         }

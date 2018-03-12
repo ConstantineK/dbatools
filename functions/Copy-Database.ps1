@@ -1,4 +1,4 @@
-function Copy-DbaDatabase {
+function Copy-Database {
     <#
         .SYNOPSIS
             Migrates SQL Server databases from one SQL Server to another.
@@ -119,25 +119,20 @@ function Copy-DbaDatabase {
                         SQL Server 2000 databases cannot be directly migrated to SQL Server 2012 and above.
                         Logins within SQL Server 2012 and above logins cannot be migrated to SQL Server 2008 R2 and below.
 
-            
-            
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
-        .LINK
-            https://dbatools.io/Copy-DbaDatabase
-
         .EXAMPLE
-            Copy-DbaDatabase -Source sqlserver2014a -Destination sqlserver2014b -Database TestDB -BackupRestore -NetworkShare \\fileshare\sql\migration
+            Copy-Database -Source sqlserver2014a -Destination sqlserver2014b -Database TestDB -BackupRestore -NetworkShare \\fileshare\sql\migration
 
             Migrates a single user database TestDB using Backup and restore from instance sqlserver2014a to sqlserver2014b. Backup files are stored in \\fileshare\sql\migration.
 
         .EXAMPLE
-            Copy-DbaDatabase -Source sqlserver2014a -Destination sqlcluster -DetachAttach -Reattach
+            Copy-Database -Source sqlserver2014a -Destination sqlcluster -DetachAttach -Reattach
 
             Databases will be migrated from sqlserver2014a to sqlcluster using the detach/copy files/attach method.The following will be performed: kick all users out of the database, detach all data/log files, move files across the network over an admin share (\\SqlSERVER\M$\MSSql...), attach file on destination server, reattach at source. If the database files (*.mdf, *.ndf, *.ldf) on *destination* exist and aren't in use, they will be overwritten.
 
         .EXAMPLE
-            Copy-DbaDatabase -Source sqlserver2014a -Destination sqlcluster -ExcludeDatabase Northwind, pubs -IncludeSupportDbs -Force -BackupRestore -NetworkShare \\fileshare\sql\migration
+            Copy-Database -Source sqlserver2014a -Destination sqlcluster -ExcludeDatabase Northwind, pubs -IncludeSupportDbs -Force -BackupRestore -NetworkShare \\fileshare\sql\migration
 
             Migrates all user databases except for Northwind and pubs by using backup/restore (copy-only). Backup files are stored in \\fileshare\sql\migration. If the database exists on the destination, it will be dropped prior to attach.
 
@@ -241,7 +236,7 @@ function Copy-DbaDatabase {
         [Alias('Silent')]$EnableException
     )
     begin {
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlDatabase
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlDatabase
 
         $CopyOnly = -not $NoCopyOnly
         function Join-AdminUnc {
@@ -711,11 +706,11 @@ function Copy-DbaDatabase {
         $destination = $destServer.DomainInstanceName
 
         if ($NetworkShare.Length -gt 0) {
-            if ($(Test-DbaSqlPath -SqlInstance $sourceServer -Path $NetworkShare) -eq $false) {
+            if ($(Test-SqlPath -SqlInstance $sourceServer -Path $NetworkShare) -eq $false) {
                 Write-Message -Level Verbose -Message "$Source may not be able to access $NetworkShare. Trying anyway."
             }
 
-            if ($(Test-DbaSqlPath -SqlInstance $destServer -Path $NetworkShare) -eq $false) {
+            if ($(Test-SqlPath -SqlInstance $destServer -Path $NetworkShare) -eq $false) {
                 Write-Message -Level Verbose -Message "$Destination may not be able to access $NetworkShare. Trying anyway."
             }
 
@@ -952,7 +947,7 @@ function Copy-DbaDatabase {
                     $fgRows = $dbFileTable.Tables[0].Select("dbname = '$dbName' and FileType = 'ROWS'")[0]
                     $remotePath = Split-Path $fgRows.Filename
 
-                    if (!(Test-DbaSqlPath -SqlInstance $destServer -Path $remotePath)) {
+                    if (!(Test-SqlPath -SqlInstance $destServer -Path $remotePath)) {
                         # Stop-Function -Message "Cannot resolve $remotePath on $source. `n`nYou have specified ReuseSourceFolderStructure and exact folder structure does not exist. Halting script."
                         $copyDatabaseStatus.Status = "Failed"
                         $copyDatabaseStatus.Notes = "$remotePath does not exist on $destination and ReuseSourceFolderStructure was specified" #"Can't resolve $remotePath"
@@ -1055,7 +1050,7 @@ function Copy-DbaDatabase {
 
                         $fileName = "$dbName-$timeNow.bak"
                         $backupFile = Join-Path $NetworkShare $fileName
-                        $backupTmpResult = Backup-DbaDatabase -SqlInstance $sourceServer -Database $dbName -backupDirectory (Split-Path -Path $backupFile -parent) -FileCount $numberfiles -CopyOnly:$CopyOnly
+                        $backupTmpResult = Backup-Database -SqlInstance $sourceServer -Database $dbName -backupDirectory (Split-Path -Path $backupFile -parent) -FileCount $numberfiles -CopyOnly:$CopyOnly
                         $backupResult = $BackupTmpResult.BackupComplete
                         if ($backupResult -eq $false) {
                             $serviceAccount = $sourceServer.ServiceAccount
@@ -1068,7 +1063,7 @@ function Copy-DbaDatabase {
                         }
 
                         Write-Message -Level Verbose -Message "Resuse = $ReuseSourceFolderStructure."
-                        $restoreResultTmp = $backupTmpResult | Restore-DbaDatabase -SqlInstance $destServer -DatabaseName $dbName -ReuseSourceFolderStructure:$ReuseSourceFolderStructure -NoRecovery:$NoRecovery -TrustDbBackupHistory -WithReplace:$WithReplace
+                        $restoreResultTmp = $backupTmpResult | Restore-Database -SqlInstance $destServer -DatabaseName $dbName -ReuseSourceFolderStructure:$ReuseSourceFolderStructure -NoRecovery:$NoRecovery -TrustDbBackupHistory -WithReplace:$WithReplace
                         $restoreResult = $restoreResultTmp.RestoreComplete
 
                         if ($restoreResult -eq $true) {
@@ -1130,7 +1125,7 @@ function Copy-DbaDatabase {
                             $dbOwner = Get-SaLoginName -SqlInstance $destServer
                         }
                         Write-Message -Level Verbose -Message "Updating database owner to $dbOwner."
-                        $OwnerResult = Set-DbaDatabaseOwner -SqlInstance $destServer -Database $dbName -TargetLogin $dbOwner -EnableException
+                        $OwnerResult = Set-DatabaseOwner -SqlInstance $destServer -Database $dbName -TargetLogin $dbOwner -EnableException
                         if ($OwnerResult.Length -eq 0) {
                             Write-Message -Level Verbose -Message "Failed to update database owner."
                         }
@@ -1266,8 +1261,8 @@ function Copy-DbaDatabase {
 
                 if ($SetSourceOffline -and $sourceServer.databases[$dbName].status -notlike '*offline*') {
                     if ($Pscmdlet.ShouldProcess($destination, "Setting $dbName offline on $source")) {
-                        Stop-DbaProcess -SqlInstance $sourceServer -Database $dbName
-                        Set-DbaDatabaseState -SqlInstance $sourceServer -SqlCredential $SourceSqlCredential -database $dbName -Offline
+                        Stop-Process -SqlInstance $sourceServer -Database $dbName
+                        Set-DatabaseState -SqlInstance $sourceServer -SqlCredential $SourceSqlCredential -database $dbName -Offline
                     }
                 }
 

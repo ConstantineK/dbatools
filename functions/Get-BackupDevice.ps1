@@ -1,49 +1,43 @@
 #ValidationTags#Messaging#
-function Get-DbaBackupDevice {
-    <#
-        .SYNOPSIS
-            Gets SQL Backup Device information for each instance(s) of SQL Server.
+function Get-BackupDevice {
+  <#
+      .SYNOPSIS
+        Gets SQL Backup Device information for each instance(s) of SQL Server.
 
-        .DESCRIPTION
-            The Get-DbaBackupDevice command gets SQL Backup Device information for each instance(s) of SQL Server.
+      .DESCRIPTION
+        The Get-BackupDevice command gets SQL Backup Device information for each instance(s) of SQL Server.
 
-        .PARAMETER SqlInstance
-            SQL Server name or SMO object representing the SQL Server to connect to. This can be a collection and receive pipeline input to allow the function
-            to be executed against multiple SQL Server instances.
+      .PARAMETER SqlInstance
+        SQL Server name or SMO object representing the SQL Server to connect to. This can be a collection and receive pipeline input to allow the function
+        to be executed against multiple SQL Server instances.
 
-        .PARAMETER SqlCredential
-            SqlCredential object to connect as. If not specified, current Windows login will be used.
+      .PARAMETER SqlCredential
+        SqlCredential object to connect as. If not specified, current Windows login will be used.
 
-        .PARAMETER EnableException
-            By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
-            This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
-            Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
+      .PARAMETER EnableException
+        By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
+        This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
+        Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
-        .NOTES
-            Tags: Backup
-            Author: Garry Bargsley (@gbargsley), http://blog.garrybargsley.com
+      .NOTES
+        Tags: Backup
+        Author: Garry Bargsley (@gbargsley), http://blog.garrybargsley.com
+        License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
-            dbatools PowerShell module (https://dbatools.io, clemaire@gmail.com)
-            Copyright (C) 2016 Chrissy LeMaire
-            License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
+      .EXAMPLE
+        Get-BackupDevice -SqlInstance localhost
 
-        .LINK
-            https://dbatools.io/Get-DbaBackupDevice
+        Returns all Backup Devices on the local default SQL Server instance
 
-        .EXAMPLE
-            Get-DbaBackupDevice -SqlInstance localhost
+      .EXAMPLE
+        Get-BackupDevice -SqlInstance localhost, sql2016
 
-            Returns all Backup Devices on the local default SQL Server instance
-
-        .EXAMPLE
-            Get-DbaBackupDevice -SqlInstance localhost, sql2016
-
-            Returns all Backup Devices for the local and sql2016 SQL Server instances
-    #>
+        Returns all Backup Devices for the local and sql2016 SQL Server instances
+  #>
     [CmdletBinding()]
     param (
         [parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $True)]
-        [DbaInstanceParameter]$SqlInstance,
+        $SqlInstance,
         [PSCredential]$SqlCredential,
         [Alias('Silent')]
         [switch]$EnableException

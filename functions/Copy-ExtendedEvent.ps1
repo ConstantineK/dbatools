@@ -1,4 +1,4 @@
-function Copy-DbaExtendedEvent {
+function Copy-ExtendedEvent {
     <#
         .SYNOPSIS
             Migrates SQL Extended Event Sessions except the two default sessions, AlwaysOn_health and system_health.
@@ -57,30 +57,25 @@ function Copy-DbaExtendedEvent {
             Author: Chrissy LeMaire (@cl), netnerds.net
             Requires: sysadmin access on SQL Servers
 
-            
-            
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
-        .LINK
-            https://dbatools.io/Copy-DbaExtendedEvent
-
         .EXAMPLE
-            Copy-DbaExtendedEvent -Source sqlserver2014a -Destination sqlcluster
+            Copy-ExtendedEvent -Source sqlserver2014a -Destination sqlcluster
 
             Copies all Extended Event sessions from sqlserver2014a to sqlcluster using Windows credentials.
 
         .EXAMPLE
-            Copy-DbaExtendedEvent -Source sqlserver2014a -Destination sqlcluster -SourceSqlCredential $cred
+            Copy-ExtendedEvent -Source sqlserver2014a -Destination sqlcluster -SourceSqlCredential $cred
 
             Copies all Extended Event sessions from sqlserver2014a to sqlcluster using SQL credentials for sqlserver2014a and Windows credentials for sqlcluster.
 
         .EXAMPLE
-            Copy-DbaExtendedEvent -Source sqlserver2014a -Destination sqlcluster -WhatIf
+            Copy-ExtendedEvent -Source sqlserver2014a -Destination sqlcluster -WhatIf
 
             Shows what would happen if the command were executed.
 
         .EXAMPLE
-            Copy-DbaExtendedEvent -Source sqlserver2014a -Destination sqlcluster -XeSession CheckQueries, MonitorUserDefinedException
+            Copy-ExtendedEvent -Source sqlserver2014a -Destination sqlcluster -XeSession CheckQueries, MonitorUserDefinedException
 
             Copies only the Extended Events named CheckQueries and MonitorUserDefinedException from sqlserver2014a to sqlcluster.
     #>
@@ -193,6 +188,6 @@ function Copy-DbaExtendedEvent {
         }
     }
     end {
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlExtendedEvent
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlExtendedEvent
     }
 }

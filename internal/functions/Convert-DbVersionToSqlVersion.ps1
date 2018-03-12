@@ -9,6 +9,9 @@ Internal function that makes db versions human readable
 .PARAMETER dbversion
 Analysis Server
 
+.NOTES
+  License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
+
 .EXAMPLE
 Convert-DbVersionToSqlVersion -dbversion 856
 

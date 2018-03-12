@@ -1,4 +1,4 @@
-function Copy-DbaSysDbUserObject {
+function Copy-SysDbUserObject {
     <#
         .SYNOPSIS
             Imports all user objects found in source SQL Server's master, msdb and model databases to the destination.
@@ -44,17 +44,10 @@ function Copy-DbaSysDbUserObject {
             Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
         .NOTES
-            Tags: Migration, SystemDatabase, UserObject
-
-            
-            
             License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
-        .LINK
-            https://dbatools.io/Copy-DbaSysDbUserObject
-
         .EXAMPLE
-            Copy-DbaSysDbUserObject $sourceServer $destserver
+            Copy-SysDbUserObject $sourceServer $destserver
 
             Copies user objects from source to destination
     #>
@@ -139,6 +132,6 @@ function Copy-DbaSysDbUserObject {
         }
     }
     end {
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlSysDbUserObjects
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlSysDbUserObjects
     }
 }

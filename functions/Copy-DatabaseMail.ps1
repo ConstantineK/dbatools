@@ -1,4 +1,4 @@
-function Copy-DbaDatabaseMail {
+function Copy-DatabaseMail {
     <#
     .SYNOPSIS
         Migrates Mail Profiles, Accounts, Mail Servers and Mail Server Configs from one SQL Server to another.
@@ -52,30 +52,25 @@ function Copy-DbaDatabaseMail {
         Author: Chrissy LeMaire (@cl), netnerds.net
         Requires: sysadmin access on SQL Servers
 
-        
-        
         License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
-    .LINK
-        https://dbatools.io/Copy-DbaDatabaseMail
-
     .EXAMPLE
-        Copy-DbaDatabaseMail -Source sqlserver2014a -Destination sqlcluster
+        Copy-DatabaseMail -Source sqlserver2014a -Destination sqlcluster
 
         Copies all database mail objects from sqlserver2014a to sqlcluster using Windows credentials. If database mail objects with the same name exist on sqlcluster, they will be skipped.
 
     .EXAMPLE
-        Copy-DbaDatabaseMail -Source sqlserver2014a -Destination sqlcluster -SourceSqlCredential $cred
+        Copy-DatabaseMail -Source sqlserver2014a -Destination sqlcluster -SourceSqlCredential $cred
 
         Copies all database mail objects from sqlserver2014a to sqlcluster using SQL credentials for sqlserver2014a and Windows credentials for sqlcluster.
 
     .EXAMPLE
-        Copy-DbaDatabaseMail -Source sqlserver2014a -Destination sqlcluster -WhatIf
+        Copy-DatabaseMail -Source sqlserver2014a -Destination sqlcluster -WhatIf
 
         Shows what would happen if the command were executed.
 
     .EXAMPLE
-        Copy-DbaDatabaseMail -Source sqlserver2014a -Destination sqlcluster -EnableException
+        Copy-DatabaseMail -Source sqlserver2014a -Destination sqlcluster -EnableException
 
         Performs execution of function, and will throw a terminating exception if something breaks
     #>
@@ -96,7 +91,7 @@ function Copy-DbaDatabaseMail {
 
     begin {
 
-        function Copy-DbaDatabaseMailConfig {
+        function Copy-DatabaseMailConfig {
             [cmdletbinding(SupportsShouldProcess = $true)]
             param ()
 
@@ -128,7 +123,7 @@ function Copy-DbaDatabaseMail {
             $copyMailConfigStatus | Select-DefaultView -Property DateTime, SourceServer, DestinationServer, Name, Type, Status, Notes -TypeName MigrationObject
         }
 
-        function Copy-DbaDatabaseAccount {
+        function Copy-DatabaseAccount {
             $sourceAccounts = $sourceServer.Mail.Accounts
             $destAccounts = $destServer.Mail.Accounts
 
@@ -190,7 +185,7 @@ function Copy-DbaDatabaseMail {
             }
         }
 
-        function Copy-DbaDatabaseMailProfile {
+        function Copy-DatabaseMailProfile {
 
             $sourceProfiles = $sourceServer.Mail.Profiles
             $destProfiles = $destServer.Mail.Profiles
@@ -256,7 +251,7 @@ function Copy-DbaDatabaseMail {
             }
         }
 
-        function Copy-DbaDatabaseMailServer {
+        function Copy-DatabaseMailServer {
             $sourceMailServers = $sourceServer.Mail.Accounts.MailServers
             $destMailServers = $destServer.Mail.Accounts.MailServers
 
@@ -336,22 +331,22 @@ function Copy-DbaDatabaseMail {
 
             switch ($type) {
                 "ConfigurationValues" {
-                    Copy-DbaDatabaseMailConfig
+                    Copy-DatabaseMailConfig
                     $destServer.Mail.ConfigurationValues.Refresh()
                 }
 
                 "Profiles" {
-                    Copy-DbaDatabaseMailProfile
+                    Copy-DatabaseMailProfile
                     $destServer.Mail.Profiles.Refresh()
                 }
 
                 "Accounts" {
-                    Copy-DbaDatabaseAccount
+                    Copy-DatabaseAccount
                     $destServer.Mail.Accounts.Refresh()
                 }
 
                 "mailServers" {
-                    Copy-DbaDatabaseMailServer
+                    Copy-DatabaseMailServer
                 }
             }
 
@@ -361,36 +356,36 @@ function Copy-DbaDatabaseMail {
         if (($profiles.count + $accounts.count + $mailServers.count) -gt 0) {
 
             if ($profiles.count -gt 0) {
-                Copy-DbaDatabaseMailProfile -Profiles $profiles
+                Copy-DatabaseMailProfile -Profiles $profiles
                 $destServer.Mail.Profiles.Refresh()
             }
 
             if ($accounts.count -gt 0) {
-                Copy-DbaDatabaseAccount -Accounts $accounts
+                Copy-DatabaseAccount -Accounts $accounts
                 $destServer.Mail.Accounts.Refresh()
             }
 
             if ($mailServers.count -gt 0) {
-                Copy-DbaDatabaseMailServer -mailServers $mailServers
+                Copy-DatabaseMailServer -mailServers $mailServers
             }
 
             return
         }
 
-        Copy-DbaDatabaseMailConfig
+        Copy-DatabaseMailConfig
         $destServer.Mail.ConfigurationValues.Refresh()
-        Copy-DbaDatabaseAccount
+        Copy-DatabaseAccount
         $destServer.Mail.Accounts.Refresh()
-        Copy-DbaDatabaseMailProfile
+        Copy-DatabaseMailProfile
         $destServer.Mail.Profiles.Refresh()
-        Copy-DbaDatabaseMailServer
+        Copy-DatabaseMailServer
         $copyMailConfigStatus
         $copyMailAccountStatus
         $copyMailProfileStatus
         $copyMailServerStatus
         $enableDBMailStatus
 
-        <# ToDo: Use Get/Set-DbaSpConfigure once the dynamic parameters are replaced. #>
+        <# ToDo: Use Get/Set-SpConfigure once the dynamic parameters are replaced. #>
 
         $sourceDbMailEnabled = ($sourceServer.Configuration.DatabaseMailEnabled).ConfigValue
         Write-Message -Message "$sourceServer DBMail configuration value: $sourceDbMailEnabled." -Level Verbose
@@ -424,6 +419,6 @@ function Copy-DbaDatabaseMail {
         }
     }
     end {
-        Test-DbaDeprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlDatabaseMail
+        Test-Deprecation -DeprecatedOn "1.0.0" -EnableException:$false -Alias Copy-SqlDatabaseMail
     }
 }

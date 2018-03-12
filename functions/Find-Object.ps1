@@ -1,68 +1,62 @@
-function Find-DbaStoredProcedure {
+function Find-StoredProcedure {
 <#
-.SYNOPSIS
-Returns all stored procedures that contain a specific case-insensitive string or regex pattern.
+  .SYNOPSIS
+  Returns all stored procedures that contain a specific case-insensitive string or regex pattern.
 
-.DESCRIPTION
-This function can either run against specific databases or all databases searching all user or user and system stored procedures.
+  .DESCRIPTION
+  This function can either run against specific databases or all databases searching all user or user and system stored procedures.
 
-.PARAMETER SqlInstance
-SQL Server name or SMO object representing the SQL Server to connect to. This can be a collection and receive pipeline input
+  .PARAMETER SqlInstance
+  SQL Server name or SMO object representing the SQL Server to connect to. This can be a collection and receive pipeline input
 
-.PARAMETER SqlCredential
-PSCredential object to connect as. If not specified, current Windows login will be used.
+  .PARAMETER SqlCredential
+  PSCredential object to connect as. If not specified, current Windows login will be used.
 
-.PARAMETER Database
-The database(s) to process - this list is auto-populated from the server. If unspecified, all databases will be processed.
+  .PARAMETER Database
+  The database(s) to process - this list is auto-populated from the server. If unspecified, all databases will be processed.
 
-.PARAMETER ExcludeDatabase
-The database(s) to exclude - this list is auto-populated from the server
+  .PARAMETER ExcludeDatabase
+  The database(s) to exclude - this list is auto-populated from the server
 
-.PARAMETER Pattern
-String pattern that you want to search for in the stored procedure textbody
+  .PARAMETER Pattern
+  String pattern that you want to search for in the stored procedure textbody
 
-.PARAMETER IncludeSystemObjects
-By default, system stored procedures are ignored but you can include them within the search using this parameter.
+  .PARAMETER IncludeSystemObjects
+  By default, system stored procedures are ignored but you can include them within the search using this parameter.
 
-Warning - this will likely make it super slow if you run it on all databases.
+  Warning - this will likely make it super slow if you run it on all databases.
 
-.PARAMETER IncludeSystemDatabases
-By default system databases are ignored but you can include them within the search using this parameter
+  .PARAMETER IncludeSystemDatabases
+  By default system databases are ignored but you can include them within the search using this parameter
 
-.PARAMETER EnableException
-        By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
-        This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
-        Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
+  .PARAMETER EnableException
+          By default, when something goes wrong we try to catch it, interpret it and give you a friendly warning message.
+          This avoids overwhelming you with "sea of red" exceptions, but is inconvenient because it basically disables advanced scripting.
+          Using this switch turns this "nice by default" feature off and enables you to catch exceptions with your own try/catch.
 
-.NOTES
-Author: Stephen Bennett, https://sqlnotesfromtheunderground.wordpress.com/
+  .NOTES
+  Author: Stephen Bennett, https://sqlnotesfromtheunderground.wordpress.com/
+  License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
+  .EXAMPLE
+  Find-StoredProcedure -SqlInstance DEV01 -Pattern whatever
 
+  Searches all user databases stored procedures for "whatever" in the textbody
 
-License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
+  .EXAMPLE
+  Find-StoredProcedure -SqlInstance sql2016 -Pattern '\w+@\w+\.\w+'
 
-.LINK
-https://dbatools.io/Find-DbaStoredProcedure
+  Searches all databases for all stored procedures that contain a valid email pattern in the textbody
 
-.EXAMPLE
-Find-DbaStoredProcedure -SqlInstance DEV01 -Pattern whatever
+  .EXAMPLE
+  Find-StoredProcedure -SqlInstance DEV01 -Database MyDB -Pattern 'some string' -Verbose
 
-Searches all user databases stored procedures for "whatever" in the textbody
+  Searches in "mydb" database stored procedures for "some string" in the textbody
 
-.EXAMPLE
-Find-DbaStoredProcedure -SqlInstance sql2016 -Pattern '\w+@\w+\.\w+'
+  .EXAMPLE
+  Find-StoredProcedure -SqlInstance sql2016 -Database MyDB -Pattern RUNTIME -IncludeSystemObjects
 
-Searches all databases for all stored procedures that contain a valid email pattern in the textbody
-
-.EXAMPLE
-Find-DbaStoredProcedure -SqlInstance DEV01 -Database MyDB -Pattern 'some string' -Verbose
-
-Searches in "mydb" database stored procedures for "some string" in the textbody
-
-.EXAMPLE
-Find-DbaStoredProcedure -SqlInstance sql2016 -Database MyDB -Pattern RUNTIME -IncludeSystemObjects
-
-Searches in "mydb" database stored procedures for "runtime" in the textbody
+  Searches in "mydb" database stored procedures for "runtime" in the textbody
 
 #>
     [CmdletBinding()]

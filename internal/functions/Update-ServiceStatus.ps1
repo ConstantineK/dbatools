@@ -4,7 +4,7 @@ function Update-ServiceStatus {
         Internal function. Sends start/stop request to a SQL Server service and wait for the result.
 
     .DESCRIPTION
-        Accepts objects from Get-DbaSqlService and performs a corresponding action.
+        Accepts objects from Get-SqlService and performs a corresponding action.
 
     .PARAMETER Credential
         Credential object used to connect to the computer as a different user.
@@ -13,7 +13,7 @@ function Update-ServiceStatus {
         How long to wait for the start/stop request completion before moving on.
 
     .PARAMETER ServiceCollection
-        A collection of services from Get-DbaSqlService
+        A collection of services from Get-SqlService
 
     .PARAMETER Action
         Start or stop.
@@ -31,20 +31,17 @@ function Update-ServiceStatus {
 
     .NOTES
         Author: Kirill Kravtsov ( @nvarscar )
-        Tags:
-        dbatools PowerShell module (https://dbatools.io)
-        Copyright (C) 2016 Chrissy LeMaire
         License: GPL-2.0 https://opensource.org/licenses/GPL-2.0
 
     .EXAMPLE
-        $serviceCollection = Get-DbaSqlService -ComputerName sql1
+        $serviceCollection = Get-SqlService -ComputerName sql1
         Update-ServiceStatus -ServiceCollection $serviceCollection -Action 'stop' -Timeout 30
         Update-ServiceStatus -ServiceCollection $serviceCollection -Action 'start' -Timeout 30
 
         Restarts SQL services on sql1
 
     .EXAMPLE
-        $serviceCollection = Get-DbaSqlService -ComputerName sql1
+        $serviceCollection = Get-SqlService -ComputerName sql1
         $credential = Get-Credential
         Update-ServiceStatus -ServiceCollection $serviceCollection -Action 'stop' -Timeout 0 -Credential $credential
 
@@ -92,7 +89,7 @@ function Update-ServiceStatus {
             }
             #Get CIM object
             try {
-                $svc = Get-DbaCmObject -ComputerName $server -Namespace "root\cimv2" -query "SELECT * FROM Win32_Service WHERE name = '$service'" -Credential $credential
+                $svc = Get-CmObject -ComputerName $server -Namespace "root\cimv2" -query "SELECT * FROM Win32_Service WHERE name = '$service'" -Credential $credential
             }
             catch {
                 throw $_
@@ -112,7 +109,7 @@ function Update-ServiceStatus {
                 #Wait for the service to complete the action until timeout
                 while ($true) {
                     try {
-                        $svc = Get-DbaCmObject -ComputerName $server -Namespace "root\cimv2" -query "SELECT State FROM Win32_Service WHERE name = '$service'" -Credential $credential
+                        $svc = Get-CmObject -ComputerName $server -Namespace "root\cimv2" -query "SELECT State FROM Win32_Service WHERE name = '$service'" -Credential $credential
                     }
                     catch {
                         throw $_
@@ -190,7 +187,7 @@ function Update-ServiceStatus {
                     }
                 }
                 else {
-                    Stop-Function -FunctionName $callerName -Message "Unknown object in pipeline - make sure to use Get-DbaSqlService cmdlet" -EnableException $EnableException
+                    Stop-Function -FunctionName $callerName -Message "Unknown object in pipeline - make sure to use Get-SqlService cmdlet" -EnableException $EnableException
                     Return
                 }
             }

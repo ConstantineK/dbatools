@@ -3,7 +3,7 @@ Things we know:
     - If we do this first then we get to avoid changing things we dont need.
 
   Replace all urls (lets leave copyrights for now)
-  Replace all -Dba in commands we keep with nothing (and suggest the prefix in our module code)
+  Replace all - in commands we keep with nothing (and suggest the prefix in our module code)
   Remove messaging system and revert to basic PowerShell
   Remove any command that is vastly SQL best practices encoded in a PowerShell file.
     - If we want to keep any of these, we should consider templated SQL.
@@ -13,7 +13,6 @@ Things I would posit:
     * if you want to that's fine, so lets keep the docs in the module and encourage people to use them.
     * We need to find a good middle ground for some of the commands that are "heavy" and focus our time on problems we want to solve.
       * Setting up and tearing down connections and restoring backups have a lot of overhead at the moment.
-
 
 Core:
   - Connecting to servers
@@ -25,9 +24,13 @@ Core:
   - Let's support Azure
   - Let's use PowerShell Core
 
-
 Test:
-  - Verifying that which is basically important
+  - Get pester tests into a working state post delete
 
-Removing everything else
-macbook + vagrant + ansible + mssql + sqlshell is a cool combo
+Otherwise:
+  Removing custom types ([Sqlcollaborative])
+  Remove TEPP and dynamic params if they are still around
+  Removing branding redirecting to dbatools
+  Switching existing Write-Message implementation to one of a few existing options
+  If we can, inspect private items and bring them into public scope, there's a bunch of things in internal which might useful.
+  Tagging the rest of the files with the correct licenses.
